@@ -1,0 +1,20 @@
+# ninja log v6
+22	246	7822137900143096	GD_NV_autogen/timestamp	3d52782001c6c87a
+22	246	7822137900143096	C:/Users/sangn/Downloads/Qt Project/GD_NV/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/GD_NV_autogen/timestamp	3d52782001c6c87a
+22	246	7822137900143096	GD_NV_autogen/mocs_compilation.cpp	3d52782001c6c87a
+22	246	7822137900143096	C:/Users/sangn/Downloads/Qt Project/GD_NV/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/GD_NV_autogen/mocs_compilation.cpp	3d52782001c6c87a
+362	582	7822131230583279	CMakeFiles/GD_NV.dir/GD_NV_autogen/mocs_compilation.cpp.obj	7288d5f7abaa01d3
+367	2313	7822131230656538	CMakeFiles/GD_NV.dir/main.cpp.obj	815b97b9577f7615
+2315	2482	7822131250129085	GD_NV.exe	5d14d2d4304d6b54
+50	1445	7822139465967028	GD_NV_autogen/timestamp	3d52782001c6c87a
+50	1445	7822139465967028	GD_NV_autogen/mocs_compilation.cpp	3d52782001c6c87a
+50	1445	7822139465967028	C:/Users/sangn/Downloads/Qt Project/GD_NV/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/GD_NV_autogen/timestamp	3d52782001c6c87a
+50	1445	7822139465967028	C:/Users/sangn/Downloads/Qt Project/GD_NV/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/GD_NV_autogen/mocs_compilation.cpp	3d52782001c6c87a
+1447	5938	7822139466971959	CMakeFiles/GD_NV.dir/GD_NV_autogen/mocs_compilation.cpp.obj	aaeff86e1ccd5590
+1451	5956	7822139467001987	CMakeFiles/GD_NV.dir/main.cpp.obj	7c35a75684fe57c0
+43	275	7822139851923158	GD_NV_autogen/timestamp	3d52782001c6c87a
+43	275	7822139851923158	GD_NV_autogen/mocs_compilation.cpp	3d52782001c6c87a
+43	275	7822139851923158	C:/Users/sangn/Downloads/Qt Project/GD_NV/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/GD_NV_autogen/timestamp	3d52782001c6c87a
+43	275	7822139851923158	C:/Users/sangn/Downloads/Qt Project/GD_NV/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/GD_NV_autogen/mocs_compilation.cpp	3d52782001c6c87a
+276	4075	7822139854251410	CMakeFiles/GD_NV.dir/GD_NVChung.cpp.obj	286731939a49b7d7
+4076	4689	7822139892242241	GD_NV.exe	85bc51217ddb7b79
