@@ -1,0 +1,959 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GD_NVChung</class>
+ <widget class="QMainWindow" name="GD_NVChung">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1280</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Thông tin Nhân sự</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* --- Global Styles --- */
+QWidget {
+	font-family: &quot;Segoe UI&quot;, Arial, sans-serif;
+font-size: 10pt;
+	color: #333;
+}
+
+QMainWindow {
+	background-color: #f0f2f5;
+}
+
+/* --- Navigation Sidebar --- */
+#navFrame {
+	background-color: #ffffff;
+	border-right: 1px solid #e0e0e0;
+}
+
+#navFrame QPushButton {
+	text-align: left;
+	padding: 12px 20px;
+	border: none;
+	border-radius: 8px;
+	background-color: transparent;
+	font-weight: 500;
+}
+
+#navFrame QPushButton:hover {
+	background-color: #f0f2f5;
+}
+
+#navFrame QPushButton:checked {
+	background-color: #e6f2ff;
+	color: #005a9e;
+	font-weight: bold;
+}
+
+#headerLabel {
+	font-size: 14pt;
+	font-weight: bold;
+	color: #005a9e;
+	padding: 10px;
+}
+
+/* --- Content Area --- */
+#page_info, #page_salary, #page_projects, #page_relatives, #page_attendance {
+	background-color: #f0f2f5;
+}
+
+QGroupBox {
+	font-weight: bold;
+	background-color: #ffffff;
+border: 1px solid #dcdcdc;
+	border-radius: 8px;
+	margin-top: 10px;
+}
+QGroupBox::title {
+	subcontrol-origin: margin;
+	subcontrol-position: top left;
+	padding: 0 10px;
+	left: 10px;
+}
+
+/* --- General Widgets --- */
+QLineEdit, QComboBox, QTextEdit, QDateEdit {
+	border: 1px solid #dcdcdc;
+	border-radius: 8px;
+	padding: 8px 12px;
+	background-color: white;
+}
+QLineEdit:focus, QComboBox:focus, QTextEdit:focus, QDateEdit:focus {
+	border: 1px solid #0078d7;
+}
+
+QLabel {
+    padding: 5px;
+}
+
+/* --- Buttons --- */
+QPushButton {
+	padding: 8px 18px;
+	border: 1px solid #dcdcdc;
+	border-radius: 8px;
+	background-color: white;
+	min-width: 80px;
+}
+QPushButton:hover {
+	background-color: #f5f5f5;
+	border-color: #c0c0c0;
+}
+QPushButton:pressed {
+	background-color: #e0e0e0;
+}
+
+/* --- Table --- */
+QTableWidget {
+	border: 1px solid #dcdcdc;
+	border-radius: 8px;
+gridline-color: #e0e0e0;
+	background-color: white;
+}
+QHeaderView::section {
+	background-color: #f8f9fa;
+	padding: 10px;
+	border: none;
+	border-bottom: 1px solid #dcdcdc;
+	font-weight: bold;
+}
+QTableWidget::item {
+	padding: 10px;
+}
+QTableWidget::item:selected {
+	background-color: #cfe2ff;
+	color: #000;
+}
+
+/* --- ScrollBar --- */
+QScrollBar:vertical {
+	border: none;
+	background: #f0f2f5;
+	width: 10px;
+margin: 0px 0px 0px 0px;
+}
+QScrollBar::handle:vertical {
+	background: #c0c0c0;
+	min-height: 20px;
+	border-radius: 5px;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+	height: 0px;
+}
+</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_main">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QFrame" name="navFrame">
+      <property name="minimumSize">
+      <size>
+        <width>300</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>300</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+    <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>10</number>
+       </property>
+       <property name="rightMargin">
+        <number>10</number>
+       </property>
+  <property name="bottomMargin">
+        <number>10</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="headerLabel">
+         <property name="text">
+          <string>THÔNG TIN NHÂN VIÊN</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+    </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnNavInfo">
+         <property name="text">
+          <string>Thông tin cá nhân</string>
+         </property>
+         <property name="icon">
+          <iconset resource="icons.qrc">
+           <normaloff>:/icons/user.svg</normaloff>:/icons/user.svg</iconset>
+ </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+        </widget>
+   </item>
+       <item>
+        <widget class="QPushButton" name="btnNavSalary">
+         <property name="text">
+          <string>Lương và Thu nhập</string>
+         </property>
+         <property name="icon">
+          <iconset resource="icons.qrc">
+           <normaloff>:/icons/dollar-sign.svg</normaloff>:/icons/dollar-sign.svg</iconset>
+         </property>
+  <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnNavAttendance">
+         <property name="text">
+   <string>Chấm công</string>
+         </property>
+         <property name="icon">
+          <iconset resource="icons.qrc">
+           <normaloff>:/icons/calendar.svg</normaloff>:/icons/calendar.svg</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+   <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnNavProjects">
+         <property name="text">
+          <string>Dự án</string>
+         </property>
+         <property name="icon">
+          <iconset resource="icons.qrc">
+      <normaloff>:/icons/briefcase.svg</normaloff>:/icons/briefcase.svg</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+   <widget class="QPushButton" name="btnNavRelatives">
+         <property name="text">
+          <string>Thân nhân</string>
+         </property>
+         <property name="icon">
+          <iconset resource="icons.qrc">
+           <normaloff>:/icons/family.svg</normaloff>:/icons/family.svg</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+     </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+   <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QStackedWidget" name="mainStackedWidget">
+   <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="page_info">
+       <layout class="QVBoxLayout" name="verticalLayout_info_page">
+        <item>
+         <widget class="QLabel" name="label_page_info">
+          <property name="text">
+           <string>Thông tin cá nhân</string>
+          </property>
+          <property name="font">
+          <font>
+            <pointsize>16</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_basic_info">
+ <property name="title">
+           <string>Thông tin cơ bản</string>
+          </property>
+          <layout class="QFormLayout" name="formLayout_basic">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_maNV">
+             <property name="text">
+              <string>Mã nhân viên:</string>
+        </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="lineEdit_maNV"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_hoTen">
+         <property name="text">
+              <string>Họ và tên:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="lineEdit_hoTen"/>
+</item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_cccd">
+             <property name="text">
+              <string>CCCD/CMND:</string>
+             </property>
+            </widget>
+           </item>
+  <item row="2" column="1">
+            <widget class="QLineEdit" name="lineEdit_cccd"/>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_ngaySinh">
+             <property name="text">
+              <string>Ngày sinh:</string>
+             </property>
+          </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QDateEdit" name="dateEdit_ngaySinh"/>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_gioiTinh">
+             <property 
+name="text">
+              <string>Giới tính:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QComboBox" name="comboBox_gioiTinh">
+             <item>
+     <property name="text">
+               <string>Nam</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nữ</string>
+     </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_contact">
+          <property name="title">
+         <string>Liên hệ</string>
+          </property>
+          <layout class="QFormLayout" name="formLayout_contact">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_sdt">
+             <property name="text">
+              <string>Số điện thoại:</string>
+  </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="lineEdit_sdt"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_email">
+   <property name="text">
+              <string>Email:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="lineEdit_email"/>
+           </item>
+   <item row="2" column="0">
+            <widget class="QLabel" name="label_diaChi">
+             <property name="text">
+              <string>Địa chỉ:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+         <widget class="QLineEdit" name="lineEdit_diaChi"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_work">
+          <property name="title">
+           <string>Công việc</string>
+ </property>
+          <layout class="QFormLayout" name="formLayout_work">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_viTri">
+             <property name="text">
+              <string>Vị trí:</string>
+             </property>
+            </widget>
+     </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="lineEdit_viTri"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_phongBan">
+             <property name="text">
+              <string>Phòng ban:</string>
+            </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="lineEdit_phongBan"/>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" 
+name="label_ngayVao">
+             <property name="text">
+              <string>Ngày vào:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QDateEdit" name="dateEdit_ngayVao"/>
+   </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_thamNien">
+             <property name="text">
+              <string>Thâm niên:</string>
+             </property>
+            </widget>
+           </item>
+      <item row="3" column="1">
+            <widget class="QLineEdit" name="lineEdit_thamNien">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+     </widget>
+        </item>
+        
+        <item>
+         <widget class="QLabel" name="label_page_relatives">
+          <property name="text">
+           <string>Thông tin Thân nhân</string> 
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+            <bold>true</bold> [cite: 210]
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="tableRelatives"> 
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool> 
+          </attribute>
+          <column>
+           <property name="text">
+            <string>Họ và Tên</string> 
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Quan hệ</string> [cite: 212]
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Số điện thoại</string> [cite: 212]
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_info">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+          <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_salary">
+       <layout class="QVBoxLayout" name="verticalLayout_salary_page">
+        <item>
+         <widget class="QLabel" name="label_page_salary">
+       <property name="text">
+           <string>Lương và Thu nhập</string>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+        </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_luong_TV">
+          <property name="title">
+           <string>Lương Thử việc</string>
+          </property>
+          <layout class="QFormLayout" name="formLayout">
+           <item row="0" column="0">
+      <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Phụ cấp thực tập:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+<widget class="QLineEdit" name="lineEdit_phuCapTT">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_2">
+      <property name="text">
+              <string>Lương thực nhận:</string>
+             </property>
+             <property name="font">
+              <font>
+               <bold>true</bold>
+              </font>
+      </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="lineEdit_thucNhan_TV">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+         </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_luong_CT">
+          <property name="title">
+           <string>Lương Chính thức</string>
+</property>
+          <layout class="QFormLayout" name="formLayout_2">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Lương cơ bản:</string>
+             </property>
+            </widget>
+     </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="lineEdit_luongCB_CT">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+       <item row="1" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Tổng phụ cấp (Chức vụ, Ăn trưa, Xăng):</string>
+             </property>
+            </widget>
+           </item>
+     <item row="1" column="1">
+            <widget class="QLineEdit" name="lineEdit_tongPhuCap_CT">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+          <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Các khoản giảm trừ (BHXH, Thuế):</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+      <widget class="QLineEdit" name="lineEdit_giamTru_CT">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_6">
+            <property name="text">
+              <string>Lương thực nhận:</string>
+             </property>
+             <property name="font">
+              <font>
+               <bold>true</bold>
+              </font>
+            </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="lineEdit_thucNhan_CT">
+             <property name="readOnly">
+              <bool>true</bool>
+   </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_luong_QL">
+          <property name="title">
+           <string>Lương Quản lý</string>
+      </property>
+          <layout class="QFormLayout" name="formLayout_3">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>Lương cơ bản:</string>
+             </property>
+</widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="lineEdit_luongCB_QL">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+  </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>Phụ cấp quản lý:</string>
+             </property>
+            </widget>
+           </item>
+       <item row="1" column="1">
+            <widget class="QLineEdit" name="lineEdit_phuCapQL">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" 
+column="0">
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>Các khoản giảm trừ (BHXH, Thuế):</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+        <widget class="QLineEdit" name="lineEdit_giamTru_QL">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget 
+class="QLabel" name="label_10">
+             <property name="text">
+              <string>Lương thực nhận:</string>
+             </property>
+             <property name="font">
+              <font>
+               <bold>true</bold>
+ </font>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="lineEdit_thucNhan_QL">
+             <property name="readOnly">
+              <bool>true</bool>
+     </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_salary">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+     </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+   </widget>
+      <widget class="QWidget" name="page_attendance">
+       <layout class="QVBoxLayout" name="verticalLayout_attendance_page">
+        <item>
+         <widget class="QLabel" name="label_page_attendance">
+          <property name="text">
+           <string>Chấm công</string>
+          </property>
+          <property name="font">
+           <font>
+      <pointsize>16</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+         </widget>
+        </item>
+        
+        <item>
+         <widget class="QGroupBox" name="groupBox_attendance_actions">
+          <property name="title">
+     <string>Tác vụ</string>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_attendance_actions">
+           <item>
+            <widget class="QPushButton" name="btnCheckIn">
+             <property name="text">
+              <string>Check In (Giờ vào)</string>
+             </property>
+         </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnCheckOut">
+             <property name="text">
+              <string>Check Out (Giờ ra)</string>
+             </property>
+ </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnAttendanceHistory">
+             <property name="text">
+              <string>Tải lại lịch sử</string>
+             </property>
+            </widget>
+    </item>
+           <item>
+            <spacer name="horizontalSpacer_attendance_actions">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+             <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+     </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_attendance_history">
+          <property name="title">
+           <string>Lịch sử Chấm công</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_attendance_history">
+           <item>
+            <widget class="QTableWidget" name="tableAttendance">
+         <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+ </property>
+             <attribute name="horizontalHeaderStretchLastSection">
+              <bool>true</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string>Ngày</string>
+              </property>
+            </column>
+             <column>
+              <property name="text">
+               <string>Giờ vào</string>
+              </property>
+             </column>
+             <column>
+          <property name="text">
+               <string>Giờ ra</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Trạng thái</string>
+            </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_attendance">
+   <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+  </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_projects">
+       <layout class="QVBoxLayout" name="verticalLayout_projects_page">
+        <item>
+         <widget class="QLabel" name="label_page_projects">
+          <property name="text">
+           <string>Dự án đang tham gia</string>
+          </property>
+     <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="tableProjects">
+        <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>Mã Dự án</string>
+           </property>
+          </column>
+          <column>
+        <property name="text">
+            <string>Tên Dự án</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Trạng thái</string>
+           </property>
+</column>
+          <column>
+           <property name="text">
+            <string>Người 
+phụ trách</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_relatives">   <layout class="QVBoxLayout" name="verticalLayout_relatives_page">
+        <item>
+         <spacer name="verticalSpacer_relatives">
+        <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+       </spacer>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar"/>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

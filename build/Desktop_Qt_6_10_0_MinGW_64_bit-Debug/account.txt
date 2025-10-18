@@ -1,0 +1,20 @@
+Ten nguoi dung: TOIYEUEMNHIEULAM
+Mat khau: TOIYEUEMNHIEULAM
+Email: TOIYEUEMNHIEULAM@gmail.com
+Loai nhan su: NhanVienChinhThuc
+---------------------------------
+Ten nguoi dung: NV1234567
+Mat khau: NV1234567
+Email: NV12345@gmail.com
+Loai nhan su: NhanVienChinhThuc
+---------------------------------
+Ten nguoi dung: TOIYEUEM
+Mat khau: TOIYEUEM
+Email: TOIYEUEM@gmail.com
+Loai nhan su: NhanVienChinhThuc
+---------------------------------
+Ten nguoi dung: TESTTER123
+Mat khau: TESTTER123
+Email: TESTTER@gmai.com
+Loai nhan su: NhanVienChinhThuc
+---------------------------------

@@ -1,0 +1,93 @@
+LoaiNhanSu: Nhan vien chinh thuc
+MaNV: TOIYEUEMNHIEULAM
+HoTen: TOIYEUEMNHIEULAM
+CCCD: TOIYEUEMNHIEULAM
+NgaySinh: 01/01/2000
+GioiTinh: Nam
+SDT: TOIYEUEMNHIEULAM
+Email: TOIYEUEMNHIEULAM@gmail.com
+DiaChi: TOIYEUEMNHIEULAM
+SoTaiKhoan: TOIYEUEMNHIEULAM
+NganHang: TOIYEUEMNHIEULAM
+NgayVaoCongTy: 01/01/2000
+ViTri: TOIYEUEMNHIEULAM
+PhongBan: Phòng Kỹ thuật (TECH)
+TrinhDo: TOIYEUEMNHIEULAM
+ChuyenNganh: TOIYEUEMNHIEULAM
+LuongCoBan: 1.2e+08
+HeSoLuong: 1.2
+PhuCapChucVu: 0
+PhuCapAnTrua: 5e+06
+PhuCapXangXe: 5e+06
+ThanNhan: Jack;5triue;012345678
+---------------------------------
+LoaiNhanSu: Nhan vien chinh thuc
+MaNV: NV1234567
+HoTen: NV12345
+CCCD: NV12345
+NgaySinh: 01/01/2000
+GioiTinh: Nam
+SDT: NV12345
+Email: NV12345@gmail.com
+DiaChi: Huế
+SoTaiKhoan: NV12345
+NganHang: NV12345
+NgayVaoCongTy: 01/01/2000
+ViTri: NV12345
+PhongBan: Phòng Kỹ thuật (TECH)
+TrinhDo: NV12345
+ChuyenNganh: NV12345
+LuongCoBan: 1e+07
+HeSoLuong: 1.3
+PhuCapChucVu: 0
+PhuCapAnTrua: 0
+PhuCapXangXe: 0
+ThanNhan: 123;456;789
+---------------------------------
+LoaiNhanSu: Nhan vien chinh thuc
+MaNV: TOIYEUEM
+HoTen: TOIYEUEM
+CCCD: TOIYEUEM
+NgaySinh: 01/01/2000
+GioiTinh: Nam
+SDT: TOIYEUEM
+Email: TOIYEUEM@gmail.com
+DiaChi: TOIYEUEM
+SoTaiKhoan: TOIYEUEM
+NganHang: TOIYEUEM
+NgayVaoCongTy: 01/01/2000
+ViTri: TOIYEUEM
+PhongBan: Phòng Kỹ thuật (TECH)
+TrinhDo: TOIYEUEM
+ChuyenNganh: TOIYEUEM
+LuongCoBan: 1.5e+07
+HeSoLuong: 1.2
+PhuCapChucVu: 0
+PhuCapAnTrua: 500000
+PhuCapXangXe: 0
+ThanNhan: 5.00.000;5.00.000;5.00.000
+---------------------------------
+LoaiNhanSu: Nhan vien chinh thuc
+MaNV: TESTTER123
+HoTen: TESTTER
+CCCD: TESTTER
+NgaySinh: 01/01/2000
+GioiTinh: Nam
+SDT: TESTTER
+Email: TESTTER@gmai.com
+DiaChi: TESTTER
+SoTaiKhoan: TESTTER
+NganHang: TESTTER
+NgayVaoCongTy: 01/01/2000
+ViTri: TESTTER
+PhongBan: Phòng Nhân sự (HR)
+TrinhDo: TESTTER
+ChuyenNganh: TESTTER
+LuongCoBan: 1.2e+07
+HeSoLuong: 1.3
+PhuCapChucVu: 0
+PhuCapAnTrua: 0
+PhuCapXangXe: 0
+ThanNhan: TESTTER;TESTTER;TESTTER
+ThanNhan: TESTTER;TESTTER;TESTTER
+---------------------------------

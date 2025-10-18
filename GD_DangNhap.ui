@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GD_DangNhap</class>
+ <widget class="QMainWindow" name="GD_DangNhap">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>420</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Đăng nhập</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* --- Main Window Style --- */
+#centralwidget {
+    background-color: #f4f7fc;
+}
+
+/* --- General Font Style --- */
+QWidget {
+    font-family: &quot;Segoe UI&quot;, Arial, sans-serif;
+}
+
+/* --- Form Title --- */
+#lblFormTitle {
+    font-size: 16pt;
+    font-weight: bold;
+    color: #2c3e50;
+    qproperty-alignment: 'AlignCenter';
+    margin-bottom: 25px;
+}
+
+/* --- Input Fields --- */
+QLineEdit {
+    background-color: #ffffff;
+    border: 1px solid #dde1e7;
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-size: 11pt;
+    min-height: 25px;
+}
+QLineEdit:focus {
+    border: 2px solid #3498db;
+}
+
+/* --- Login Button --- */
+#btnLogin {
+    background-color: #3498db;
+    color: white;
+    font-size: 12pt;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px; /* (height / 2) */
+    min-height: 40px;
+    margin-top: 15px;
+}
+#btnLogin:hover {
+    background-color: #2980b9;
+}
+#btnLogin:pressed {
+    background-color: #1f618d;
+}
+
+/* --- Forgot Password Button --- */
+#btnForgot {
+    background-color: transparent;
+    border: none;
+    color: #3498db;
+    font-size: 9pt;
+    text-decoration: none;
+}
+#btnForgot:hover {
+    text-decoration: underline;
+}
+
+/* --- Status/Error Message Label --- */
+#lblStatus {
+    color: #e74c3c; /* Red color for errors */
+    font-size: 9pt;
+    qproperty-alignment: 'AlignCenter';
+    min-height: 20px;
+}
+</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="leftMargin">
+     <number>30</number>
+    </property>
+    <property name="topMargin">
+     <number>30</number>
+    </property>
+    <property name="rightMargin">
+     <number>30</number>
+    </property>
+    <property name="bottomMargin">
+     <number>30</number>
+    </property>
+    <item>
+     <spacer name="horizontalSpacer_1">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="formLayout">
+      <property name="spacing">
+       <number>15</number>
+      </property>
+      <item>
+       <spacer name="verticalSpacer_1">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="lblFormTitle">
+        <property name="text">
+         <string>Đăng Nhập Hệ Thống</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="txtUsername">
+        <property name="placeholderText">
+         <string>Tên đăng nhập</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="txtPassword">
+        <property name="echoMode">
+         <enum>QLineEdit::Password</enum>
+        </property>
+        <property name="placeholderText">
+         <string>Mật khẩu</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="forgotPassLayout">
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnForgot">
+          <property name="text">
+           <string>Quên mật khẩu?</string>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnLogin">
+        <property name="text">
+         <string>Đăng nhập</string>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="lblStatus">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
+

@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GD_QLPhongBan</class>
+ <widget class="QWidget" name="GD_QLPhongBan">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>700</width>
+    <height>550</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Quản lý Phòng ban</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* --- Global Styles --- */
+QWidget {
+    font-family: &quot;Segoe UI&quot;, Arial, sans-serif;
+    font-size: 10pt;
+    color: #333;
+}
+
+QDialog {
+    background-color: #f0f2f5;
+}
+
+/* --- Content Area --- */
+QGroupBox {
+    font-weight: bold;
+    background-color: #ffffff;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 10px;
+    left: 10px;
+}
+
+/* --- General Widgets --- */
+QLineEdit, QComboBox, QTextEdit {
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background-color: white;
+}
+QLineEdit:focus, QComboBox:focus, QTextEdit:focus {
+    border: 1px solid #0078d7;
+}
+
+QPushButton {
+    padding: 8px 18px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    background-color: white;
+    min-width: 80px;
+}
+QPushButton:hover {
+    background-color: #f5f5f5;
+    border-color: #c0c0c0;
+}
+QPushButton:pressed {
+    background-color: #e0e0e0;
+}
+
+
+/* --- Specialized Buttons --- */
+QPushButton#btnAdd {
+    background-color: #0078d7;
+    color: white;
+    border-color: #0078d7;
+    font-weight: bold;
+}
+QPushButton#btnAdd:hover {
+    background-color: #005a9e;
+    border-color: #004578;
+}
+
+QPushButton#btnDelete {
+    background-color: #d9534f;
+    color: white;
+    border-color: #d9534f;
+}
+QPushButton#btnDelete:hover {
+    background-color: #c9302c;
+    border-color: #ac2925;
+}
+
+
+/* --- Table --- */
+QTableWidget {
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    gridline-color: #e0e0e0;
+    background-color: white;
+}
+QHeaderView::section {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid #dcdcdc;
+    font-weight: bold;
+}
+QTableWidget::item {
+    padding: 10px;
+}
+QTableWidget::item:selected {
+    background-color: #cfe2ff;
+    color: #000;
+}
+
+/* --- ScrollBar --- */
+QScrollBar:vertical {
+    border: none;
+    background: #f0f2f5;
+    width: 10px;
+    margin: 0px 0px 0px 0px;
+}
+QScrollBar::handle:vertical {
+    background: #c0c0c0;
+    min-height: 20px;
+    border-radius: 5px;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_main">
+   <item>
+    <widget class="QGroupBox" name="groupFilter">
+     <property name="title">
+      <string>Bộ lọc / Chọn nhóm</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_filter">
+      <item>
+       <widget class="QLabel" name="labelSelectGroup">
+        <property name="text">
+         <string>Chọn nhóm:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboGroups">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>Tất cả</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Khối Kỹ thuật</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Khối Kinh doanh</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Khối Hành chính</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacerFilter">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnRefresh">
+        <property name="text">
+         <string>Làm mới</string>
+        </property>
+        <property name="icon">
+         <iconset resource="icons.qrc">
+          <normaloff>:/icons/refresh.svg</normaloff>:/icons/refresh.svg</iconset>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupDetails">
+     <property name="title">
+      <string>Thông tin Phòng ban</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelDeptID">
+        <property name="text">
+         <string>Mã phòng ban:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="lineDeptID"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelDeptName">
+        <property name="text">
+         <string>Tên phòng ban:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="lineDeptName"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelLeader">
+        <property name="text">
+         <string>Trưởng phòng:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="lineLeader"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelNote">
+        <property name="text">
+         <string>Mô tả / Ghi chú:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QTextEdit" name="textNote"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="frameButtons">
+     <layout class="QHBoxLayout" name="horizontalLayout_buttons">
+      <item>
+       <widget class="QPushButton" name="btnAdd">
+        <property name="text">
+         <string>Thêm</string>
+        </property>
+        <property name="icon">
+         <iconset resource="icons.qrc">
+          <normaloff>:/icons/add.svg</normaloff>:/icons/add.svg</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnEdit">
+        <property name="text">
+         <string>Sửa</string>
+        </property>
+        <property name="icon">
+         <iconset resource="icons.qrc">
+          <normaloff>:/icons/edit.svg</normaloff>:/icons/edit.svg</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnDelete">
+        <property name="text">
+         <string>Xóa</string>
+        </property>
+        <property name="icon">
+         <iconset resource="icons.qrc">
+          <normaloff>:/icons/delete.svg</normaloff>:/icons/delete.svg</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacerButtons">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupList">
+     <property name="title">
+      <string>Danh sách Phòng ban</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_table">
+      <item>
+       <widget class="QTableWidget" name="tableDepartments">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <column>
+         <property name="text">
+          <string>Mã PB</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Tên Phòng ban</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Trưởng phòng</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Ghi chú</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>
