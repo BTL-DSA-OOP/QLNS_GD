@@ -5,7 +5,6 @@
 #include <QFile>
 #include <QTextStream>
 #include <QTimer>
-#include <QDebug> // Thư viện đã được include
 #include "GD_NVChung.h"
 
 GD_DangNhap::GD_DangNhap(QWidget *parent)
@@ -95,7 +94,7 @@ void GD_DangNhap::onLoginClicked()
 
     if (loginSuccess) {
         this->hide();
-        if (userRole == "QuanLy") {
+        if (userRole == "QuanLy" || userRole =="uanLy") {
             GD_Qly *mainWindow = new GD_Qly();
             mainWindow->show();
         } else if (userRole == "NhanVienChinhThuc" || userRole == "NhanVienThuViec" ||userRole == "hanVienThuViec" || userRole == "hanVienChinhThuc") {

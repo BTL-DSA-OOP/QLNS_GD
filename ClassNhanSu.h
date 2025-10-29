@@ -432,6 +432,7 @@ private:
     double heSoLuong;
     double phuCapQuanLy;
     double thuongHieuQua;
+    int soNgayPhepConLai; // <<< THÊM: Số ngày phép còn lại
     std::vector<std::string> phongBanQuanLy;
     std::vector<std::string> duAnPhuTrach;
     int soLuongNhanVienQuanLy;
@@ -439,7 +440,7 @@ private:
 
 public:
     // Thêm constructor mặc định
-    QuanLy() : NhanSu(), luongCoBan(0.0), heSoLuong(1.5), phuCapQuanLy(0.0), thuongHieuQua(0.0), soLuongNhanVienQuanLy(0) {}
+    QuanLy() : NhanSu(), luongCoBan(0.0), heSoLuong(1.5), phuCapQuanLy(0.0), thuongHieuQua(0.0), soLuongNhanVienQuanLy(0), soNgayPhepConLai(12) {} // <<< Cập nhật khởi tạo phép
 
     QuanLy(const std::string &ma, const std::string &ht, const std::string &cccd,
            const NgayThang &ns, GioiTinh gt, double luong, double heSo = 1.5,
@@ -448,10 +449,11 @@ public:
            const std::string &dc = "", const std::string &stk = "",
            const std::string &nganHang = "", const NgayThang &ngayVao = NgayThang(),
            const std::string &viTri = "", const PhongBan &pb = PhongBan(),
-           const std::string &trinhDo = "", const std::string &nganh = "")
+           const std::string &trinhDo = "", const std::string &nganh = "",
+           int phep = 12) // <<< Thêm tham số phép
         : NhanSu(ma, ht, cccd, ns, gt, sdt, em, dc, stk, nganHang, ngayVao, viTri, pb, trinhDo, nganh),
         luongCoBan(luong), heSoLuong(heSo), phuCapQuanLy(pcQuanLy),
-        thuongHieuQua(thuong), soLuongNhanVienQuanLy(soNVQuanLy) {}
+        thuongHieuQua(thuong), soLuongNhanVienQuanLy(soNVQuanLy), soNgayPhepConLai(phep) {} // <<< Cập nhật khởi tạo phép
 
     // Override các phương thức ảo
     double tinhLuongThucNhan() const override
@@ -485,6 +487,7 @@ public:
         std::cout << "Thuong hieu qua: " << thuongHieuQua << " VND" << std::endl;
         std::cout << "Luong thuc nhan: " << tinhLuongThucNhan() << " VND" << std::endl;
         std::cout << "So luong nhan vien quan ly: " << soLuongNhanVienQuanLy << std::endl;
+        std::cout << "So ngay phep con lai: " << soNgayPhepConLai << std::endl; // <<< Hiển thị phép
         std::cout << "So du an phu trach: " << duAnPhuTrach.size() << std::endl;
         std::cout << "\n--- THAN NHAN ---" << std::endl;
         hienThiThanNhan();
@@ -494,6 +497,12 @@ public:
     double getLuongCoBan() const { return luongCoBan; }
     double getHeSoLuong() const { return heSoLuong; }
     double getPhuCapQuanLy() const { return phuCapQuanLy; }
+
+    // Getters/Setters cho phép
+    int getSoNgayPhepConLai() const { return soNgayPhepConLai; } // <<< THÊM GETTER
+    void nghiPhep(int soNgay) { soNgayPhepConLai -= soNgay; }
+    void capNhatPhep(int soNgay) { soNgayPhepConLai = soNgay; }
+
     void capNhatLuong(double luong, double heSo)
     {
         luongCoBan = luong;

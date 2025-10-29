@@ -58,7 +58,7 @@ QMainWindow {
 }
 
 /* --- Content Area --- */
-#page_info, #page_salary, #page_projects, #page_relatives, #page_attendance {
+#page_info, #page_salary, #page_projects, #page_relatives, #page_attendance, #page_leave_request {
 	background-color: #f0f2f5;
 }
 
@@ -166,7 +166,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
     <item>
      <widget class="QFrame" name="navFrame">
       <property name="minimumSize">
-      <size>
+       <size>
         <width>300</width>
         <height>0</height>
        </size>
@@ -180,7 +180,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
-    <property name="frameShadow">
+      <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -193,7 +193,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
        <property name="rightMargin">
         <number>10</number>
        </property>
-  <property name="bottomMargin">
+       <property name="bottomMargin">
         <number>10</number>
        </property>
        <item>
@@ -204,7 +204,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
          <property name="alignment">
           <set>Qt::AlignCenter</set>
          </property>
-    </widget>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="btnNavInfo">
@@ -214,7 +214,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
          <property name="icon">
           <iconset resource="icons.qrc">
            <normaloff>:/icons/user.svg</normaloff>:/icons/user.svg</iconset>
- </property>
+         </property>
          <property name="checkable">
           <bool>true</bool>
          </property>
@@ -225,7 +225,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
           <bool>true</bool>
          </property>
         </widget>
-   </item>
+       </item>
        <item>
         <widget class="QPushButton" name="btnNavSalary">
          <property name="text">
@@ -235,7 +235,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
           <iconset resource="icons.qrc">
            <normaloff>:/icons/dollar-sign.svg</normaloff>:/icons/dollar-sign.svg</iconset>
          </property>
-  <property name="checkable">
+         <property name="checkable">
           <bool>true</bool>
          </property>
          <property name="autoExclusive">
@@ -246,7 +246,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
        <item>
         <widget class="QPushButton" name="btnNavAttendance">
          <property name="text">
-   <string>Chấm công</string>
+          <string>Chấm công</string>
          </property>
          <property name="icon">
           <iconset resource="icons.qrc">
@@ -256,7 +256,24 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
           <bool>true</bool>
          </property>
          <property name="autoExclusive">
-   <bool>true</bool>
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnNavLeaveRequest">
+         <property name="text">
+          <string>Xin nghỉ</string>
+         </property>
+         <property name="icon">
+          <iconset resource="icons.qrc">
+           <normaloff>:/icons/leave.svg</normaloff>:/icons/leave.svg</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -267,7 +284,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
          </property>
          <property name="icon">
           <iconset resource="icons.qrc">
-      <normaloff>:/icons/briefcase.svg</normaloff>:/icons/briefcase.svg</iconset>
+           <normaloff>:/icons/briefcase.svg</normaloff>:/icons/briefcase.svg</iconset>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -278,7 +295,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
         </widget>
        </item>
        <item>
-   <widget class="QPushButton" name="btnNavRelatives">
+        <widget class="QPushButton" name="btnNavRelatives">
          <property name="text">
           <string>Thân nhân</string>
          </property>
@@ -288,7 +305,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
          </property>
          <property name="checkable">
           <bool>true</bool>
-     </property>
+         </property>
          <property name="autoExclusive">
           <bool>true</bool>
          </property>
@@ -299,7 +316,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-   <property name="sizeHint" stdset="0">
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>40</height>
@@ -312,7 +329,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
     </item>
     <item>
      <widget class="QStackedWidget" name="mainStackedWidget">
-   <property name="currentIndex">
+      <property name="currentIndex">
        <number>0</number>
       </property>
       <widget class="QWidget" name="page_info">
@@ -323,7 +340,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
            <string>Thông tin cá nhân</string>
           </property>
           <property name="font">
-          <font>
+           <font>
             <pointsize>16</pointsize>
             <bold>true</bold>
            </font>
@@ -332,7 +349,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox_basic_info">
- <property name="title">
+          <property name="title">
            <string>Thông tin cơ bản</string>
           </property>
           <layout class="QFormLayout" name="formLayout_basic">
@@ -340,7 +357,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
             <widget class="QLabel" name="label_maNV">
              <property name="text">
               <string>Mã nhân viên:</string>
-        </property>
+             </property>
             </widget>
            </item>
            <item row="0" column="1">
@@ -348,14 +365,14 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label_hoTen">
-         <property name="text">
+             <property name="text">
               <string>Họ và tên:</string>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
             <widget class="QLineEdit" name="lineEdit_hoTen"/>
-</item>
+           </item>
            <item row="2" column="0">
             <widget class="QLabel" name="label_cccd">
              <property name="text">
@@ -363,7 +380,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
              </property>
             </widget>
            </item>
-  <item row="2" column="1">
+           <item row="2" column="1">
             <widget class="QLineEdit" name="lineEdit_cccd"/>
            </item>
            <item row="3" column="0">
@@ -371,15 +388,14 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
              <property name="text">
               <string>Ngày sinh:</string>
              </property>
-          </widget>
+            </widget>
            </item>
            <item row="3" column="1">
             <widget class="QDateEdit" name="dateEdit_ngaySinh"/>
            </item>
            <item row="4" column="0">
             <widget class="QLabel" name="label_gioiTinh">
-             <property 
-name="text">
+             <property name="text">
               <string>Giới tính:</string>
              </property>
             </widget>
@@ -387,14 +403,14 @@ name="text">
            <item row="4" column="1">
             <widget class="QComboBox" name="comboBox_gioiTinh">
              <item>
-     <property name="text">
+              <property name="text">
                <string>Nam</string>
               </property>
              </item>
              <item>
               <property name="text">
                <string>Nữ</string>
-     </property>
+              </property>
              </item>
             </widget>
            </item>
@@ -404,14 +420,14 @@ name="text">
         <item>
          <widget class="QGroupBox" name="groupBox_contact">
           <property name="title">
-         <string>Liên hệ</string>
+           <string>Liên hệ</string>
           </property>
           <layout class="QFormLayout" name="formLayout_contact">
            <item row="0" column="0">
             <widget class="QLabel" name="label_sdt">
              <property name="text">
               <string>Số điện thoại:</string>
-  </property>
+             </property>
             </widget>
            </item>
            <item row="0" column="1">
@@ -419,7 +435,7 @@ name="text">
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label_email">
-   <property name="text">
+             <property name="text">
               <string>Email:</string>
              </property>
             </widget>
@@ -427,7 +443,7 @@ name="text">
            <item row="1" column="1">
             <widget class="QLineEdit" name="lineEdit_email"/>
            </item>
-   <item row="2" column="0">
+           <item row="2" column="0">
             <widget class="QLabel" name="label_diaChi">
              <property name="text">
               <string>Địa chỉ:</string>
@@ -435,7 +451,7 @@ name="text">
             </widget>
            </item>
            <item row="2" column="1">
-         <widget class="QLineEdit" name="lineEdit_diaChi"/>
+            <widget class="QLineEdit" name="lineEdit_diaChi"/>
            </item>
           </layout>
          </widget>
@@ -444,7 +460,7 @@ name="text">
          <widget class="QGroupBox" name="groupBox_work">
           <property name="title">
            <string>Công việc</string>
- </property>
+          </property>
           <layout class="QFormLayout" name="formLayout_work">
            <item row="0" column="0">
             <widget class="QLabel" name="label_viTri">
@@ -452,7 +468,7 @@ name="text">
               <string>Vị trí:</string>
              </property>
             </widget>
-     </item>
+           </item>
            <item row="0" column="1">
             <widget class="QLineEdit" name="lineEdit_viTri"/>
            </item>
@@ -460,15 +476,14 @@ name="text">
             <widget class="QLabel" name="label_phongBan">
              <property name="text">
               <string>Phòng ban:</string>
-            </property>
+             </property>
             </widget>
            </item>
            <item row="1" column="1">
             <widget class="QLineEdit" name="lineEdit_phongBan"/>
            </item>
            <item row="2" column="0">
-            <widget class="QLabel" 
-name="label_ngayVao">
+            <widget class="QLabel" name="label_ngayVao">
              <property name="text">
               <string>Ngày vào:</string>
              </property>
@@ -476,7 +491,7 @@ name="label_ngayVao">
            </item>
            <item row="2" column="1">
             <widget class="QDateEdit" name="dateEdit_ngayVao"/>
-   </item>
+           </item>
            <item row="3" column="0">
             <widget class="QLabel" name="label_thamNien">
              <property name="text">
@@ -484,7 +499,7 @@ name="label_ngayVao">
              </property>
             </widget>
            </item>
-      <item row="3" column="1">
+           <item row="3" column="1">
             <widget class="QLineEdit" name="lineEdit_thamNien">
              <property name="readOnly">
               <bool>true</bool>
@@ -492,42 +507,6 @@ name="label_ngayVao">
             </widget>
            </item>
           </layout>
-     </widget>
-        </item>
-        
-        <item>
-         <widget class="QLabel" name="label_page_relatives">
-          <property name="text">
-           <string>Thông tin Thân nhân</string> 
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-            <bold>true</bold> [cite: 210]
-           </font>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QTableWidget" name="tableRelatives"> 
-          <attribute name="horizontalHeaderStretchLastSection">
-           <bool>true</bool> 
-          </attribute>
-          <column>
-           <property name="text">
-            <string>Họ và Tên</string> 
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Quan hệ</string> [cite: 212]
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Số điện thoại</string> [cite: 212]
-           </property>
-          </column>
          </widget>
         </item>
         <item>
@@ -538,7 +517,7 @@ name="label_ngayVao">
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-          <height>40</height>
+            <height>40</height>
            </size>
           </property>
          </spacer>
@@ -549,7 +528,7 @@ name="label_ngayVao">
        <layout class="QVBoxLayout" name="verticalLayout_salary_page">
         <item>
          <widget class="QLabel" name="label_page_salary">
-       <property name="text">
+          <property name="text">
            <string>Lương và Thu nhập</string>
           </property>
           <property name="font">
@@ -567,14 +546,14 @@ name="label_ngayVao">
           </property>
           <layout class="QFormLayout" name="formLayout">
            <item row="0" column="0">
-      <widget class="QLabel" name="label">
+            <widget class="QLabel" name="label">
              <property name="text">
               <string>Phụ cấp thực tập:</string>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
-<widget class="QLineEdit" name="lineEdit_phuCapTT">
+            <widget class="QLineEdit" name="lineEdit_phuCapTT">
              <property name="readOnly">
               <bool>true</bool>
              </property>
@@ -582,14 +561,14 @@ name="label_ngayVao">
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label_2">
-      <property name="text">
+             <property name="text">
               <string>Lương thực nhận:</string>
              </property>
              <property name="font">
               <font>
                <bold>true</bold>
               </font>
-      </property>
+             </property>
             </widget>
            </item>
            <item row="1" column="1">
@@ -597,7 +576,7 @@ name="label_ngayVao">
              <property name="readOnly">
               <bool>true</bool>
              </property>
-         </widget>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -606,7 +585,7 @@ name="label_ngayVao">
          <widget class="QGroupBox" name="groupBox_luong_CT">
           <property name="title">
            <string>Lương Chính thức</string>
-</property>
+          </property>
           <layout class="QFormLayout" name="formLayout_2">
            <item row="0" column="0">
             <widget class="QLabel" name="label_3">
@@ -614,7 +593,7 @@ name="label_ngayVao">
               <string>Lương cơ bản:</string>
              </property>
             </widget>
-     </item>
+           </item>
            <item row="0" column="1">
             <widget class="QLineEdit" name="lineEdit_luongCB_CT">
              <property name="readOnly">
@@ -622,14 +601,14 @@ name="label_ngayVao">
              </property>
             </widget>
            </item>
-       <item row="1" column="0">
+           <item row="1" column="0">
             <widget class="QLabel" name="label_4">
              <property name="text">
               <string>Tổng phụ cấp (Chức vụ, Ăn trưa, Xăng):</string>
              </property>
             </widget>
            </item>
-     <item row="1" column="1">
+           <item row="1" column="1">
             <widget class="QLineEdit" name="lineEdit_tongPhuCap_CT">
              <property name="readOnly">
               <bool>true</bool>
@@ -637,14 +616,14 @@ name="label_ngayVao">
             </widget>
            </item>
            <item row="2" column="0">
-          <widget class="QLabel" name="label_5">
+            <widget class="QLabel" name="label_5">
              <property name="text">
               <string>Các khoản giảm trừ (BHXH, Thuế):</string>
              </property>
             </widget>
            </item>
            <item row="2" column="1">
-      <widget class="QLineEdit" name="lineEdit_giamTru_CT">
+            <widget class="QLineEdit" name="lineEdit_giamTru_CT">
              <property name="readOnly">
               <bool>true</bool>
              </property>
@@ -652,21 +631,21 @@ name="label_ngayVao">
            </item>
            <item row="3" column="0">
             <widget class="QLabel" name="label_6">
-            <property name="text">
+             <property name="text">
               <string>Lương thực nhận:</string>
              </property>
              <property name="font">
               <font>
                <bold>true</bold>
               </font>
-            </property>
+             </property>
             </widget>
            </item>
            <item row="3" column="1">
             <widget class="QLineEdit" name="lineEdit_thucNhan_CT">
              <property name="readOnly">
               <bool>true</bool>
-   </property>
+             </property>
             </widget>
            </item>
           </layout>
@@ -676,14 +655,14 @@ name="label_ngayVao">
          <widget class="QGroupBox" name="groupBox_luong_QL">
           <property name="title">
            <string>Lương Quản lý</string>
-      </property>
+          </property>
           <layout class="QFormLayout" name="formLayout_3">
            <item row="0" column="0">
             <widget class="QLabel" name="label_7">
              <property name="text">
               <string>Lương cơ bản:</string>
              </property>
-</widget>
+            </widget>
            </item>
            <item row="0" column="1">
             <widget class="QLineEdit" name="lineEdit_luongCB_QL">
@@ -691,7 +670,7 @@ name="label_ngayVao">
               <bool>true</bool>
              </property>
             </widget>
-  </item>
+           </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label_8">
              <property name="text">
@@ -699,15 +678,14 @@ name="label_ngayVao">
              </property>
             </widget>
            </item>
-       <item row="1" column="1">
+           <item row="1" column="1">
             <widget class="QLineEdit" name="lineEdit_phuCapQL">
              <property name="readOnly">
               <bool>true</bool>
              </property>
             </widget>
            </item>
-           <item row="2" 
-column="0">
+           <item row="2" column="0">
             <widget class="QLabel" name="label_9">
              <property name="text">
               <string>Các khoản giảm trừ (BHXH, Thuế):</string>
@@ -715,22 +693,21 @@ column="0">
             </widget>
            </item>
            <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEdit_giamTru_QL">
+            <widget class="QLineEdit" name="lineEdit_giamTru_QL">
              <property name="readOnly">
               <bool>true</bool>
              </property>
             </widget>
            </item>
            <item row="3" column="0">
-            <widget 
-class="QLabel" name="label_10">
+            <widget class="QLabel" name="label_10">
              <property name="text">
               <string>Lương thực nhận:</string>
              </property>
              <property name="font">
               <font>
                <bold>true</bold>
- </font>
+              </font>
              </property>
             </widget>
            </item>
@@ -738,7 +715,7 @@ class="QLabel" name="label_10">
             <widget class="QLineEdit" name="lineEdit_thucNhan_QL">
              <property name="readOnly">
               <bool>true</bool>
-     </property>
+             </property>
             </widget>
            </item>
           </layout>
@@ -748,7 +725,7 @@ class="QLabel" name="label_10">
          <spacer name="verticalSpacer_salary">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
-     </property>
+          </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
@@ -758,7 +735,7 @@ class="QLabel" name="label_10">
          </spacer>
         </item>
        </layout>
-   </widget>
+      </widget>
       <widget class="QWidget" name="page_attendance">
        <layout class="QVBoxLayout" name="verticalLayout_attendance_page">
         <item>
@@ -768,17 +745,16 @@ class="QLabel" name="label_10">
           </property>
           <property name="font">
            <font>
-      <pointsize>16</pointsize>
+            <pointsize>16</pointsize>
             <bold>true</bold>
            </font>
           </property>
          </widget>
         </item>
-        
         <item>
          <widget class="QGroupBox" name="groupBox_attendance_actions">
           <property name="title">
-     <string>Tác vụ</string>
+           <string>Tác vụ</string>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_attendance_actions">
            <item>
@@ -786,14 +762,14 @@ class="QLabel" name="label_10">
              <property name="text">
               <string>Check In (Giờ vào)</string>
              </property>
-         </widget>
+            </widget>
            </item>
            <item>
             <widget class="QPushButton" name="btnCheckOut">
              <property name="text">
               <string>Check Out (Giờ ra)</string>
              </property>
- </widget>
+            </widget>
            </item>
            <item>
             <widget class="QPushButton" name="btnAttendanceHistory">
@@ -801,7 +777,7 @@ class="QLabel" name="label_10">
               <string>Tải lại lịch sử</string>
              </property>
             </widget>
-    </item>
+           </item>
            <item>
             <spacer name="horizontalSpacer_attendance_actions">
              <property name="orientation">
@@ -809,7 +785,7 @@ class="QLabel" name="label_10">
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-             <width>40</width>
+               <width>40</width>
                <height>20</height>
               </size>
              </property>
@@ -817,7 +793,7 @@ class="QLabel" name="label_10">
            </item>
           </layout>
          </widget>
-     </item>
+        </item>
         <item>
          <widget class="QGroupBox" name="groupBox_attendance_history">
           <property name="title">
@@ -826,21 +802,21 @@ class="QLabel" name="label_10">
           <layout class="QVBoxLayout" name="verticalLayout_attendance_history">
            <item>
             <widget class="QTableWidget" name="tableAttendance">
-         <property name="editTriggers">
+             <property name="editTriggers">
               <set>QAbstractItemView::NoEditTriggers</set>
              </property>
              <property name="alternatingRowColors">
               <bool>true</bool>
              </property>
              <property name="selectionMode">
-      <enum>QAbstractItemView::SingleSelection</enum>
+              <enum>QAbstractItemView::SingleSelection</enum>
              </property>
              <property name="selectionBehavior">
               <enum>QAbstractItemView::SelectRows</enum>
              </property>
              <property name="sortingEnabled">
               <bool>true</bool>
- </property>
+             </property>
              <attribute name="horizontalHeaderStretchLastSection">
               <bool>true</bool>
              </attribute>
@@ -848,21 +824,21 @@ class="QLabel" name="label_10">
               <property name="text">
                <string>Ngày</string>
               </property>
-            </column>
+             </column>
              <column>
               <property name="text">
                <string>Giờ vào</string>
               </property>
              </column>
              <column>
-          <property name="text">
+              <property name="text">
                <string>Giờ ra</string>
               </property>
              </column>
              <column>
               <property name="text">
                <string>Trạng thái</string>
-            </property>
+              </property>
              </column>
             </widget>
            </item>
@@ -871,7 +847,7 @@ class="QLabel" name="label_10">
         </item>
         <item>
          <spacer name="verticalSpacer_attendance">
-   <property name="orientation">
+          <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
@@ -880,10 +856,163 @@ class="QLabel" name="label_10">
             <height>40</height>
            </size>
           </property>
-  </spacer>
+         </spacer>
         </item>
        </layout>
       </widget>
+      
+      <!-- Sửa index 3: TRANG XIN NGHỈ -->
+      <widget class="QWidget" name="page_leave_request">
+       <layout class="QVBoxLayout" name="verticalLayout_leave_request_page">
+        <item>
+         <widget class="QLabel" name="label_page_leave">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Yêu cầu Nghỉ phép</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_phepConLai">
+          <property name="text">
+           <string>Số ngày phép còn lại: &lt;b&gt;0&lt;/b&gt; ngày</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_new_leave_request">
+          <property name="title">
+           <string>Tạo yêu cầu mới</string>
+          </property>
+          <layout class="QFormLayout" name="formLayout_leave">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_ngayBatDau">
+             <property name="text">
+              <string>Ngày bắt đầu:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QDateEdit" name="dateEdit_ngayBatDau">
+             <property name="calendarPopup">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_soNgayNghi">
+             <property name="text">
+              <string>Số ngày nghỉ (vd: 1.5):</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="lineEdit_soNgayNghi">
+             <property name="text">
+              <string>1</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_lyDo">
+             <property name="text">
+              <string>Lý do:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QTextEdit" name="textEdit_lyDo"/>
+           </item>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="btnSendRequest">
+             <property name="text">
+              <string>Gửi yêu cầu</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_leave_history">
+          <property name="title">
+           <string>Lịch sử yêu cầu</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_leave_history">
+           <item>
+            <widget class="QTableWidget" name="tableLeaveRequests">
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <attribute name="horizontalHeaderStretchLastSection">
+              <bool>true</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string>Mã YC</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Ngày bắt đầu</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Số ngày</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Lý do</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Trạng thái</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Người duyệt</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_leave">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      
+      <!-- Sửa index 4: TRANG DỰ ÁN -->
       <widget class="QWidget" name="page_projects">
        <layout class="QVBoxLayout" name="verticalLayout_projects_page">
         <item>
@@ -891,7 +1020,7 @@ class="QLabel" name="label_10">
           <property name="text">
            <string>Dự án đang tham gia</string>
           </property>
-     <property name="font">
+          <property name="font">
            <font>
             <pointsize>16</pointsize>
             <bold>true</bold>
@@ -901,7 +1030,7 @@ class="QLabel" name="label_10">
         </item>
         <item>
          <widget class="QTableWidget" name="tableProjects">
-        <attribute name="horizontalHeaderStretchLastSection">
+          <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
           </attribute>
           <column>
@@ -910,7 +1039,7 @@ class="QLabel" name="label_10">
            </property>
           </column>
           <column>
-        <property name="text">
+           <property name="text">
             <string>Tên Dự án</string>
            </property>
           </column>
@@ -918,21 +1047,58 @@ class="QLabel" name="label_10">
            <property name="text">
             <string>Trạng thái</string>
            </property>
-</column>
+          </column>
           <column>
            <property name="text">
-            <string>Người 
-phụ trách</string>
+            <string>Người phụ trách</string>
            </property>
           </column>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="page_relatives">   <layout class="QVBoxLayout" name="verticalLayout_relatives_page">
+      
+      <!-- Sửa index 5: TRANG THÂN NHÂN -->
+      <widget class="QWidget" name="page_relatives">
+       <layout class="QVBoxLayout" name="verticalLayout_relatives_page">
+        <item>
+         <widget class="QLabel" name="label_page_relatives">
+          <property name="text">
+           <string>Thông tin Thân nhân</string>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="tableRelatives">
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>Họ và Tên</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Quan hệ</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Số điện thoại</string>
+           </property>
+          </column>
+         </widget>
+        </item>
         <item>
          <spacer name="verticalSpacer_relatives">
-        <property name="orientation">
+          <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
@@ -941,7 +1107,7 @@ phụ trách</string>
             <height>40</height>
            </size>
           </property>
-       </spacer>
+         </spacer>
         </item>
        </layout>
       </widget>

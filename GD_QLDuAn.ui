@@ -149,6 +149,157 @@
      </layout>
     </widget>
    </item>
+   <!-- BẮT ĐẦU KHUNG NHẬP LIỆU MỚI -->
+   <item>
+    <widget class="QGroupBox" name="groupBox_Input">
+     <property name="title">
+      <string>Thông Tin Dự Án</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Mã Dự Án:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="txtMaDA">
+          <property name="placeholderText">
+           <string>VD: DA001</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Tên Dự Án:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="txtTenDA">
+          <property name="placeholderText">
+           <string>VD: Xây dựng hệ thống ABC</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Ngày Bắt Đầu:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QDateEdit" name="dateNgayBD">
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
+          <property name="displayFormat">
+           <string>dd/MM/yyyy</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Ngày Kết Thúc:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QDateEdit" name="dateNgayKT">
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
+          <property name="displayFormat">
+           <string>dd/MM/yyyy</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Người Phụ Trách:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QComboBox" name="comboNguoiPT"/>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Kinh Phí (VND):</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QDoubleSpinBox" name="spinKinhPhi">
+          <property name="suffix">
+           <string> VND</string>
+          </property>
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <double>9.9999999999e+11</double>
+          </property>
+          <property name="singleStep">
+           <double>1000000.0</double>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnSaveChanges">
+          <property name="text">
+           <string>Lưu Thay Đổi</string>
+          </property>
+          <!-- Giả định bạn có icon save.svg trong icons.qrc -->
+          <!-- <property name="icon">
+           <iconset resource="icons.qrc">
+            <normaloff>:/icons/save.svg</normaloff>:/icons/save.svg</iconset>
+          </property> -->
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnCancelChanges">
+          <property name="text">
+           <string>Hủy</string>
+          </property>
+           <!-- Giả định bạn có icon cancel.svg trong icons.qrc -->
+          <!-- <property name="icon">
+           <iconset resource="icons.qrc">
+            <normaloff>:/icons/cancel.svg</normaloff>:/icons/cancel.svg</iconset>
+          </property> -->
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <!-- KẾT THÚC KHUNG NHẬP LIỆU MỚI -->
    <item>
     <widget class="QTableWidget" name="tableProjects">
      <property name="editTriggers">

@@ -2,13 +2,14 @@
 #include "ClassNhanSu.h"
 #include <QFile>
 #include <QTextStream>
-#include <QDebug>
 #include <QIODevice>
+#include <QLocale>
 
-//Biến toàn cục
+    //Biến toàn cục
 std::vector<std::shared_ptr<NhanSu>> g_danhSachNhanSu;
 std::vector<DuAn> g_danhSachDuAn;
-
+std::vector<PhongBan> g_danhSachPhongBan;
+std::vector<YeuCauNghiPhep> g_danhSachYeuCauNghiPhep;
 // --- Hàm tìm kiếm Nhân Sự ---
 std::shared_ptr<NhanSu> timNhanSuTheoMa(const std::string& maNV) {
     for (const auto& ns : g_danhSachNhanSu) {
@@ -25,7 +26,6 @@ void docNhanSuTuFile() {
     g_danhSachNhanSu.clear();
     QFile file("dsns.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning("Không thể mở file dsns.txt để đọc!");
         return;
     }
 
@@ -80,7 +80,6 @@ void docNhanSuTuFile() {
         } else if (line.startsWith("ChuyenNganh: ") && ns) {
             ns->setChuyenNganh(line.mid(12).trimmed().toStdString());
         }
-
         // Đọc thông tin lương (các hàm này đã được thêm vào ClassNhanSu.h)
         else if (line.startsWith("PhuCapThucTap: ") && ns) {
             if (auto tv = std::dynamic_pointer_cast<NhanVienThuViec>(ns)) {
@@ -119,7 +118,6 @@ void docNhanSuTuFile() {
                 ql->setThuongHieuQua(line.mid(16).trimmed().toDouble());
             }
         }
-
         // Đọc thân nhân
         else if (line.startsWith("ThanNhan: ") && ns) {
             QStringList parts = line.mid(10).trimmed().split(';');
@@ -132,7 +130,6 @@ void docNhanSuTuFile() {
                 }
             }
         }
-
         else if (line.startsWith("---------------------------------")) {
             if (ns) {
                 g_danhSachNhanSu.push_back(ns);
@@ -141,14 +138,12 @@ void docNhanSuTuFile() {
         }
     }
     file.close();
-    qDebug() << "Đã tải" << g_danhSachNhanSu.size() << "nhân sự từ dsns.txt.";
 }
 
 
 void luuNhanSuVaoFile() {
     QFile file("dsns.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
-        qWarning("Không thể mở file dsns.txt để ghi!");
         return;
     }
 
@@ -202,7 +197,70 @@ void luuNhanSuVaoFile() {
     file.close();
 }
 
+// Hàm đọc/ghi Yêu cầu nghỉ phép (SỬA LỖI TÊN FILE VÀ DÙNG QLOCALE)
+void docYeuCauNghiPhepTuFile() {
+    g_danhSachYeuCauNghiPhep.clear();
+    QFile file("yeucaughinghep.txt");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return;
+    }
 
+    QTextStream in(&file);
+    QLocale locale(QLocale::C); // Dùng QLocale::C để đọc/ghi số thập phân nhất quán
+
+    while (!in.atEnd()) {
+        QString line = in.readLine().trimmed();
+        if (line.isEmpty()) continue;
+
+        // Định dạng: MaYC,MaNV,NgayBD,NgayKT,SoNgayNghi,LyDo,TrangThai(0-2),NguoiDuyet
+        QStringList parts = line.split(',');
+        if (parts.size() == 8) {
+            std::string maYC = parts[0].toStdString();
+            std::string maNV = parts[1].toStdString();
+            NgayThang bd = NgayThang::fromString(parts[2].toStdString());
+            NgayThang kt = NgayThang::fromString(parts[3].toStdString());
+
+            double soNgay = locale.toDouble(parts[4]); // Dùng locale để đọc số
+
+            std::string lyDo = parts[5].toStdString();
+
+            // Xử lý trạng thái (0: Chờ duyệt, 1: Đã duyệt, 2: Từ chối)
+            TrangThaiDuyet tt;
+            int trangThaiInt = parts[6].toInt();
+            if (trangThaiInt == 1) tt = TrangThaiDuyet::DA_DUYET;
+            else if (trangThaiInt == 2) tt = TrangThaiDuyet::TU_CHOI;
+            else tt = TrangThaiDuyet::CHO_DUYET;
+
+            std::string nguoiDuyet = parts[7].toStdString();
+
+            YeuCauNghiPhep yc(maYC, maNV, bd, kt, soNgay, lyDo, tt, nguoiDuyet);
+            g_danhSachYeuCauNghiPhep.push_back(yc);
+        }
+    }
+    file.close();
+}
+
+void luuYeuCauNghiPhepVaoFile() {
+    QFile file("yeucaughinghep.txt"); // <<< TÊN FILE ĐÃ ĐƯỢC CHUẨN HÓA
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+        return;
+    }
+    QTextStream out(&file);
+    QLocale locale(QLocale::C); // Dùng QLocale::C để đảm bảo dấu thập phân là '.'
+
+    for (const auto& yc : g_danhSachYeuCauNghiPhep) {
+        // Định dạng: MaYC,MaNV,NgayBD,NgayKT,SoNgayNghi,LyDo,TrangThai(0-2),NguoiDuyet
+        out << QString::fromStdString(yc.getMaYeuCau()) << ","
+            << QString::fromStdString(yc.getMaNhanVien()) << ","
+            << QString::fromStdString(yc.getNgayBatDau().toString()) << ","
+            << QString::fromStdString(yc.getNgayKetThuc().toString()) << ","
+            << locale.toString(yc.getSoNgayNghi(), 'f', 1) << "," // Dùng locale để ghi số
+            << QString::fromStdString(yc.getLyDo()) << ","
+            << (int)yc.getTrangThai() << "," // 0: Chờ duyệt, 1: Đã duyệt, 2: Từ chối
+            << QString::fromStdString(yc.getNguoiDuyet()) << "\n";
+    }
+    file.close();
+}
 // HÀM XỬ LÝ TÀI KHOẢN (account.txt)
 
 bool isUsernameTaken(const QString& username) {
@@ -227,7 +285,6 @@ void xoaTaiKhoan(const std::string& tenNguoiDung) {
     QFile outFile("account_temp.txt");
 
     if (!inFile.open(QIODevice::ReadOnly | QIODevice::Text) || !outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning("Không thể mở file account để xóa.");
         return;
     }
 
@@ -277,7 +334,6 @@ DuAn* timDuAnTheoMa(const std::string& maDA) {
 void luuDuAnVaoFile() {
     QFile file("duan.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
-        qWarning("Không thể mở file du an de ghi!");
         return;
     }
 
@@ -305,13 +361,11 @@ void luuDuAnVaoFile() {
     }
 
     file.close();
-    qDebug() << "Đã lưu" << g_danhSachDuAn.size() << "dự án vào duan.txt.";
 }
 
 void docDuAnTuFile() {
     QFile file("duan.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning("Chua co file du lieu du an. Bat dau voi danh sach trong.");
         return;
     }
 
@@ -343,5 +397,46 @@ void docDuAnTuFile() {
     }
 
     file.close();
-    qDebug() << "Đã đọc" << g_danhSachDuAn.size() << "dự án từ duan.txt.";
+}
+PhongBan* timPhongBanTheoMa(const std::string& maPB) {
+    for (auto& pb : g_danhSachPhongBan) {
+        if (pb.getMaPhongBan() == maPB) {
+            return &pb;
+        }
+    }
+    return nullptr;
+}
+void luuPhongBanVaoFile() {
+    QFile file("phongban.txt");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+        return;
+    }
+    QTextStream out(&file);
+    for (const auto& pb : g_danhSachPhongBan) {
+        // Định dạng: MaPB,TenPB
+        out << QString::fromStdString(pb.getMaPhongBan()) << ","
+            << QString::fromStdString(pb.getTenPhongBan()) << "\n";
+    }
+    file.close();
+}
+void docPhongBanTuFile() {
+    g_danhSachPhongBan.clear();
+    QFile file("phongban.txt");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return;
+    }
+    QTextStream in(&file);
+    while (!in.atEnd()) {
+        QString line = in.readLine().trimmed();
+        if (line.isEmpty()) continue;
+
+        QStringList parts = line.split(',');
+        if (parts.size() == 2) {
+            g_danhSachPhongBan.emplace_back(
+                parts[0].toStdString(), // MaPB
+                parts[1].toStdString()  // TenPB
+                );
+        }
+    }
+    file.close();
 }

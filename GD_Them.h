@@ -30,6 +30,11 @@ private:
     Ui::GD_Them *ui;
     void setupThanNhanTable();
 
+    // --- THAY ĐỔI: Thêm 2 hàm hỗ trợ ---
+    void fillCommonDataFromUI(std::shared_ptr<NhanSu> ns);
+    void fillSalaryDataFromUI(std::shared_ptr<NhanSu> ns);
+    // --- KẾT THÚC THAY ĐỔI ---
+    void updateThanNhanHeight();
     bool isEditMode = false;
     QString m_editMaNV;
 };

@@ -7,7 +7,7 @@
 #include <QTextStream>
 #include <QRegularExpression>
 #include <QDebug>
-#include <QLocale> // <<< THÊM THƯ VIỆN NÀY
+#include <QLocale>
 
 bool isUsernameTaken(const QString& username);
 
@@ -38,7 +38,7 @@ GD_Them::GD_Them(QWidget *parent) :
         spinBox->setDecimals(0); // Tiền VNĐ không cần số thập phân
     }
 
-    // Cài đặt riêng cho spinbox "Hệ số lương" (cần 2 số thập phân)
+    // Cài đặt riêng cho hệ số lương
     ui->spinHeSoLuong_CT->setLocale(vnLocale);
     ui->spinHeSoLuong_QL->setLocale(vnLocale);
 
@@ -47,14 +47,18 @@ GD_Them::GD_Them(QWidget *parent) :
     ui->cmbLoaiNhanSu->addItem("Nhân viên chính thức", "NhanVienChinhThuc");
     ui->cmbLoaiNhanSu->addItem("Quản lý", "QuanLy");
 
-    ui->cmbPhongBan->addItem("Phòng Kỹ thuật", "TECH");
-    ui->cmbPhongBan->addItem("Phòng Nhân sự", "HR");
-    ui->cmbPhongBan->addItem("Phòng Kinh doanh", "SALES");
-
+    ui->cmbPhongBan->clear();
+    if (g_danhSachPhongBan.empty()) {
+        ui->cmbPhongBan->addItem("Chưa có phòng ban", "");
+    } else {
+        for (const auto& pb : g_danhSachPhongBan) {
+            ui->cmbPhongBan->addItem(
+                QString::fromStdString(pb.getTenPhongBan()),
+                QString::fromStdString(pb.getMaPhongBan())
+                );
+        }
+    }
     connect(ui->cmbLoaiNhanSu, &QComboBox::currentIndexChanged, this, &GD_Them::updateSalaryFields);
-    // connect(ui->btnThem, &QPushButton::clicked, this, &GD_Them::on_btnThem_clicked);
-    // connect(ui->btnThemThanNhan, &QPushButton::clicked, this, &GD_Them::on_btnThemThanNhan_clicked);
-    // connect(ui->btnXoaThanNhan, &QPushButton::clicked, this, &GD_Them::on_btnXoaThanNhan_clicked);
 
     connect(ui->txtUsername, &QLineEdit::textChanged, ui->txtMaNhanVien, &QLineEdit::setText);
     ui->txtMaNhanVien->setReadOnly(true);
@@ -73,6 +77,7 @@ void GD_Them::setupThanNhanTable()
     ui->tableThanNhan->setColumnCount(3);
     ui->tableThanNhan->setHorizontalHeaderLabels({"Họ và Tên", "Quan hệ", "Số điện thoại"});
     ui->tableThanNhan->horizontalHeader()->setStretchLastSection(true);
+    updateThanNhanHeight();
 }
 
 void GD_Them::updateSalaryFields()
@@ -126,8 +131,6 @@ void GD_Them::loadDataForEdit(std::shared_ptr<NhanSu> ns)
     ui->txtChuyenNganh->setText(QString::fromStdString(ns->getChuyenNganh()));
 
     ui->cmbLoaiNhanSu->setCurrentText(QString::fromStdString(ns->getLoaiNhanSu()));
-    ui->cmbLoaiNhanSu->setEnabled(false);
-
     // Tải dữ liệu lương
     if (auto tv = std::dynamic_pointer_cast<NhanVienThuViec>(ns)) {
         ui->spinPhuCapThucTap->setValue(tv->getPhuCapThucTap());
@@ -159,78 +162,58 @@ void GD_Them::loadDataForEdit(std::shared_ptr<NhanSu> ns)
             ui->tableThanNhan->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(tn.getSoDienThoai())));
         }
     }
+    updateThanNhanHeight();
 }
 
 
-// --- Xử lý sự kiện "Thêm"/"Cập nhật" ---
-void GD_Them::on_btnThem_clicked()
+void capNhatThongTinTaiKhoan(const QString& maNV, const QString& emailMoi, const QString& vaiTroMoi)
 {
-    ui->lblStatus->clear();
+    QFile inFile("account.txt");
+    QFile outFile("account_temp.txt");
 
-    QString username = ui->txtUsername->text().trimmed();
-    QString password = ui->txtPassword->text();
-    QString confirmPassword = ui->txtConfirmPassword->text();
-    QString email = ui->txtEmail->text().trimmed();
-    QString role = ui->cmbLoaiNhanSu->currentData().toString();
-    QString loaiNhanSu = ui->cmbLoaiNhanSu->currentText();
-
-    if (!isEditMode) {
-        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || email.isEmpty()) {
-            ui->lblStatus->setText("Vui lòng nhập đầy đủ thông tin tài khoản!");
-            return;
-        }
-        if (username.length() < 8 || username.length() > 30) {
-            ui->lblStatus->setText("Tên tài khoản phải có 8–30 ký tự!");
-            return;
-        }
-        if (password.length() < 8 || password.length() > 30) {
-            ui->lblStatus->setText("Mật khẩu phải có 8–30 ký tự!");
-            return;
-        }
-        if (password != confirmPassword) {
-            ui->lblStatus->setText("Mật khẩu xác nhận không khớp!");
-            return;
-        }
-        if (isUsernameTaken(username)) {
-            ui->lblStatus->setText("Tài khoản này đã tồn tại!");
-            return;
-        }
-    }
-    if (!isEmailValid(email)) {
-        ui->lblStatus->setText("Địa chỉ Email không hợp lệ!");
-        return;
-    }
-    if (ui->txtHoTen->text().isEmpty() || ui->txtCCCD->text().isEmpty() || ui->txtSoDienThoai->text().isEmpty()) {
-        ui->lblStatus->setText("Vui lòng nhập đầy đủ thông tin cơ bản và liên hệ của nhân sự!");
+    if (!inFile.open(QIODevice::ReadOnly | QIODevice::Text) || !outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         return;
     }
 
+    QTextStream in(&inFile);
+    QTextStream out(&outFile);
+    bool userFound = false;
 
-    std::shared_ptr<NhanSu> ns;
-    if (isEditMode) {
-        ns = timNhanSuTheoMa(m_editMaNV.toStdString());
-        if (!ns) {
-            QMessageBox::critical(this, "Lỗi", "Không tìm thấy nhân sự để cập nhật.");
-            return;
-        }
-    } else {
-        if (loaiNhanSu == "Nhân viên thử việc") {
-            ns = std::make_shared<NhanVienThuViec>();
-        } else if (loaiNhanSu == "Nhân viên chính thức") {
-            ns = std::make_shared<NhanVienChinhThuc>();
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+
+        if (line.startsWith("Ten nguoi dung: ") && line.mid(16).trimmed() == maNV) {
+            userFound = true;
+            out << line << "\n"; // Ghi lại dòng Tên người dùng
+        } else if (userFound && line.startsWith("Mat khau: ")) {
+            out << line << "\n"; // Ghi lại dòng Mật khẩu (không đổi)
+        } else if (userFound && line.startsWith("Email: ")) {
+            out << "Email: " << emailMoi << "\n"; // Ghi email mới
+        } else if (userFound && line.startsWith("Loai nhan su: ")) {
+            out << "Loai nhan su: " << vaiTroMoi << "\n"; // Ghi vai trò mới
+        } else if (userFound && line.startsWith("---------------------------------")) {
+            out << line << "\n";
+            userFound = false; // Reset
         } else {
-            ns = std::make_shared<QuanLy>();
+            out << line << "\n"; // Ghi lại các dòng khác
         }
-        ns->setMaNhanVien(username.toStdString());
     }
 
-    // --- 4. Cập nhật dữ liệu từ UI vào đối tượng ns ---
+    inFile.close();
+    outFile.close();
+
+    QFile::remove("account.txt");
+    QFile::rename("account_temp.txt", "account.txt");
+}
+
+void GD_Them::fillCommonDataFromUI(std::shared_ptr<NhanSu> ns)
+{
     ns->setHoTen(ui->txtHoTen->text().toStdString());
     ns->setCCCD(ui->txtCCCD->text().toStdString());
     ns->setNgaySinh(NgayThang::fromString(ui->dateNgaySinh->date().toString("dd/MM/yyyy").toStdString()));
     ns->setGioiTinh(ui->cmbGioiTinh->currentText() == "Nam" ? GioiTinh::NAM : GioiTinh::NU);
     ns->setSoDienThoai(ui->txtSoDienThoai->text().toStdString());
-    ns->setEmail(email.toStdString());
+    ns->setEmail(ui->txtEmail->text().trimmed().toStdString());
     ns->setDiaChi(ui->txtDiaChi->text().toStdString());
     ns->setSoTaiKhoan(ui->txtSoTaiKhoan->text().toStdString());
     ns->setTenNganHang(ui->txtTenNganHang->text().toStdString());
@@ -243,7 +226,10 @@ void GD_Them::on_btnThem_clicked()
 
     ns->setTrinhDoHocVan(ui->txtTrinhDoHocVan->text().toStdString());
     ns->setChuyenNganh(ui->txtChuyenNganh->text().toStdString());
+}
 
+void GD_Them::fillSalaryDataFromUI(std::shared_ptr<NhanSu> ns)
+{
     // Cập nhật lương
     if (auto tv = std::dynamic_pointer_cast<NhanVienThuViec>(ns)) {
         tv->setPhuCapThucTap(ui->spinPhuCapThucTap->value());
@@ -277,16 +263,137 @@ void GD_Them::on_btnThem_clicked()
                 ));
         }
     }
+}
 
-    // --- 5. Lưu dữ liệu ---
-    if (isEditMode) {
+
+void GD_Them::on_btnThem_clicked()
+{
+    ui->lblStatus->clear();
+
+    // --- 1. Lấy và kiểm tra dữ liệu ---
+    QString username = ui->txtUsername->text().trimmed();
+    QString password = ui->txtPassword->text();
+    QString confirmPassword = ui->txtConfirmPassword->text();
+    QString email = ui->txtEmail->text().trimmed();
+    QString newRoleData = ui->cmbLoaiNhanSu->currentData().toString();
+
+    if (!isEditMode) {
+        // Kiểm tra chung cho chế độ "Thêm mới"
+        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || email.isEmpty()) {
+            ui->lblStatus->setText("Vui lòng nhập đầy đủ thông tin tài khoản!");
+            return;
+        }
+        if (username.length() < 5 || username.length() > 30) {
+            ui->lblStatus->setText("Tên tài khoản phải có 5–30 ký tự!");
+            return;
+        }
+        if (password.length() < 5 || password.length() > 30) {
+            ui->lblStatus->setText("Mật khẩu phải có 5–30 ký tự!");
+            return;
+        }
+        if (password != confirmPassword) {
+            ui->lblStatus->setText("Mật khẩu xác nhận không khớp!");
+            return;
+        }
+        if (isUsernameTaken(username)) {
+            ui->lblStatus->setText("Tài khoản này đã tồn tại!");
+            return;
+        }
+    }
+
+    // Kiểm tra chung cho cả "Thêm" và "Sửa"
+    if (!isEmailValid(email)) {
+        ui->lblStatus->setText("Địa chỉ Email không hợp lệ!");
+        return;
+    }
+    if (ui->txtHoTen->text().isEmpty() || ui->txtCCCD->text().isEmpty() || ui->txtSoDienThoai->text().isEmpty()) {
+        ui->lblStatus->setText("Vui lòng nhập đầy đủ thông tin cơ bản và liên hệ của nhân sự!");
+        return;
+    }
+
+
+    // --- 2. Xử lý logic ---
+    if (isEditMode)
+    {
+        // --- CHẾ ĐỘ SỬA ---
+        auto ns_cu = timNhanSuTheoMa(m_editMaNV.toStdString());
+        if (!ns_cu) {
+            QMessageBox::critical(this, "Lỗi", "Không tìm thấy nhân sự để cập nhật.");
+            return;
+        }
+
+        // Xác định loại nhân sự cũ (dưới dạng Data: "NhanVienChinhThuc")
+        QString oldRoleData;
+        if (std::dynamic_pointer_cast<NhanVienThuViec>(ns_cu)) oldRoleData = "NhanVienThuViec";
+        else if (std::dynamic_pointer_cast<NhanVienChinhThuc>(ns_cu)) oldRoleData = "NhanVienChinhThuc";
+        else if (std::dynamic_pointer_cast<QuanLy>(ns_cu)) oldRoleData = "QuanLy";
+
+
+        if (oldRoleData == newRoleData)
+        {
+            // Cập nhật dữ liệu trên đối tượng cũ
+            fillCommonDataFromUI(ns_cu);
+            fillSalaryDataFromUI(ns_cu);
+
+            // Cập nhật file account
+            capNhatThongTinTaiKhoan(m_editMaNV, email, newRoleData);
+        }
+        else
+        {
+            // 1. Tạo đối tượng mới dựa trên vai trò mới
+            std::shared_ptr<NhanSu> ns_moi;
+            if (newRoleData == "NhanVienThuViec") {
+                ns_moi = std::make_shared<NhanVienThuViec>();
+            } else if (newRoleData == "NhanVienChinhThuc") {
+                ns_moi = std::make_shared<NhanVienChinhThuc>();
+            } else { // QuanLy
+                ns_moi = std::make_shared<QuanLy>();
+            }
+
+            // 2. Gán Mã NV và điền thông tin chung từ UI
+            ns_moi->setMaNhanVien(m_editMaNV.toStdString()); // Giữ nguyên Mã NV
+            fillCommonDataFromUI(ns_moi);
+
+            // 3. Điền thông tin lương mới từ UI
+            fillSalaryDataFromUI(ns_moi);
+
+            // 4. Thay thế con trỏ CŨ bằng con trỏ mới trong danh sách toàn cục
+            for (auto& ns_ptr : g_danhSachNhanSu) {
+                if (ns_ptr->getMaNhanVien() == m_editMaNV.toStdString()) {
+                    ns_ptr = ns_moi; // Đây là bước "thay thế"
+                    break;
+                }
+            }
+
+            // 5. Cập nhật file account (cả email và vai trò)
+            capNhatThongTinTaiKhoan(m_editMaNV, email, newRoleData);
+        }
+
+        // Lưu file dsns.txt
         luuNhanSuVaoFile();
         QMessageBox::information(this, "Thành công", "Cập nhật thông tin nhân sự thành công!");
 
-    } else {
-        g_danhSachNhanSu.push_back(ns);
+    }
+    else
+    {
+        // --- CHẾ ĐỘ THÊM mới  ---
+        std::shared_ptr<NhanSu> ns_moi;
+        if (newRoleData == "NhanVienThuViec") {
+            ns_moi = std::make_shared<NhanVienThuViec>();
+        } else if (newRoleData == "NhanVienChinhThuc") {
+            ns_moi = std::make_shared<NhanVienChinhThuc>();
+        } else { // QuanLy
+            ns_moi = std::make_shared<QuanLy>();
+        }
+
+        ns_moi->setMaNhanVien(username.toStdString());
+        fillCommonDataFromUI(ns_moi);
+        fillSalaryDataFromUI(ns_moi);
+
+        g_danhSachNhanSu.push_back(ns_moi);
         luuNhanSuVaoFile();
 
+        // Ghi file account.txt
         QFile accountFile("account.txt");
         if (!accountFile.open(QIODevice::Append | QIODevice::Text)) {
             ui->lblStatus->setText("Lỗi: Không thể mở file account.txt!");
@@ -296,7 +403,7 @@ void GD_Them::on_btnThem_clicked()
         accountOut << "Ten nguoi dung: " << username << "\n";
         accountOut << "Mat khau: " << password << "\n";
         accountOut << "Email: " << email << "\n";
-        accountOut << "Loai nhan su: " << role << "\n";
+        accountOut << "Loai nhan su: " << newRoleData << "\n";
         accountOut << "---------------------------------\n";
         accountFile.close();
 
@@ -306,7 +413,7 @@ void GD_Them::on_btnThem_clicked()
     this->accept();
 }
 
-// --- Xử lý sự kiện thêm một thân nhân vào bảng ---
+
 void GD_Them::on_btnThemThanNhan_clicked()
 {
     QString hoTen = ui->txtTenThanNhan->text().trimmed();
@@ -328,10 +435,10 @@ void GD_Them::on_btnThemThanNhan_clicked()
     ui->txtTenThanNhan->clear();
     ui->txtQuanHe->clear();
     ui->txtSdtThanNhan->clear();
+    updateThanNhanHeight();
 }
 
 
-// --- Xử lý sự kiện xóa một thân nhân khỏi bảng ---
 void GD_Them::on_btnXoaThanNhan_clicked()
 {
     int currentRow = ui->tableThanNhan->currentRow();
@@ -340,4 +447,33 @@ void GD_Them::on_btnXoaThanNhan_clicked()
         return;
     }
     ui->tableThanNhan->removeRow(currentRow);
+    updateThanNhanHeight();
+}
+void GD_Them::updateThanNhanHeight()
+{
+    int rowCount = ui->tableThanNhan->rowCount();
+    int headerHeight = ui->tableThanNhan->horizontalHeader()->height();
+    int rowsHeight = 0;
+
+    if (rowCount == 0) {
+        ui->tableThanNhan->setMinimumHeight(80);
+        ui->tableThanNhan->setMaximumHeight(80);
+        return;
+    }
+
+    for (int i = 0; i < rowCount; ++i) {
+        rowsHeight += ui->tableThanNhan->rowHeight(i);
+    }
+
+    int frameWidth = ui->tableThanNhan->frameWidth() * 2;
+    int calculatedHeight = headerHeight + rowsHeight + frameWidth;
+
+    int maxHeight = 250;
+    if (calculatedHeight > maxHeight) {
+        ui->tableThanNhan->setMinimumHeight(maxHeight);
+        ui->tableThanNhan->setMaximumHeight(maxHeight);
+    } else {
+        ui->tableThanNhan->setMinimumHeight(calculatedHeight);
+        ui->tableThanNhan->setMaximumHeight(calculatedHeight);
+    }
 }

@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QString>
 #include <QDateTime>
-
+#include "NhanSuData.h"
 // Forward declaration
 namespace Ui {
 class GD_NVChung;
@@ -27,6 +27,9 @@ private slots:
     void on_btnCheckIn_clicked();
     void on_btnCheckOut_clicked();
     void on_btnAttendanceHistory_clicked();
+    void on_btnNavLeaveRequest_clicked();
+    void on_btnSendRequest_clicked();
+    void updateLeaveDaysDisplay();
 
 private:
     Ui::GD_NVChung *ui;
@@ -34,6 +37,7 @@ private:
 
     // --- Biến lưu thông tin lương ---
     QString m_loaiNhanSu;
+    int m_soNgayPhepConLai = 0;
     // Lương thử việc
     double m_phuCapThucTap = 0.0;
     // Lương chính thức
@@ -48,6 +52,7 @@ private:
     // --- Hàm xử lý ---
     void loadNhanSuData(const QString &maNV);
     void calculateAndDisplaySalary();
+    void loadMyLeaveRequests(); // <<< MỚI
 };
 
 #endif
