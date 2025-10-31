@@ -13,7 +13,7 @@ GD_QLPhongBan::GD_QLPhongBan(QWidget *parent) :
     ui->setupUi(this);
     setupTables();
     clearChiTiet();
-    setEditMode(false); // Khởi tạo ở chế độ Thêm
+    setEditMode(false);
     ui->splitter->setSizes(QList<int>() << 400 << 600);
 }
 
@@ -24,7 +24,6 @@ GD_QLPhongBan::~GD_QLPhongBan()
 
 void GD_QLPhongBan::setupTables()
 {
-    // Cấu hình tablePhongBan
     ui->tablePhongBan->setColumnCount(3);
     ui->tablePhongBan->setHorizontalHeaderLabels({"Mã PB", "Tên Phòng Ban", "Số Lượng NV"});
     ui->tablePhongBan->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
@@ -33,7 +32,6 @@ void GD_QLPhongBan::setupTables()
     ui->tablePhongBan->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tablePhongBan->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    // Cấu hình tableChiTietNV
     ui->tableChiTietNV->setColumnCount(3);
     ui->tableChiTietNV->setHorizontalHeaderLabels({"Mã NV", "Họ và Tên", "Vị trí"});
     ui->tableChiTietNV->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
@@ -42,30 +40,20 @@ void GD_QLPhongBan::setupTables()
     ui->tableChiTietNV->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
-// Tự động tải lại dữ liệu khi tab này được hiển thị
+// Tự động tải lại dữ liệu
 void GD_QLPhongBan::showEvent(QShowEvent *event)
 {
     QWidget::showEvent(event);
-    // Chỉ làm mới nếu không đang ở giữa chừng Sửa
     if (m_currentMode == EditMode::Add) {
         refreshData();
     }
 }
-
-/**
- * @brief Đặt trạng thái giao diện cho chế độ Sửa (Edit) hoặc Thêm (Add).
- * Khi Sửa (isEditing = true), các panel khác bị vô hiệu hóa.
- * Khi Thêm (isEditing = false), các panel khác được kích hoạt và form được reset.
- */
 void GD_QLPhongBan::setEditMode(bool isEditing)
 {
-    // Sửa lại hàm này một chút
-    // groupNhapLieu luôn hiển thị, hàm này chỉ bật/tắt các phần khác
     ui->frameControls->setEnabled(!isEditing); // Khung chứa nút Sửa/Xóa
     ui->groupBox_DanhSach->setEnabled(!isEditing);
     ui->groupBox_ChiTiet->setEnabled(!isEditing);
 
-    // Vô hiệu hóa các nút Sửa/Xóa khi đang Thêm/Sửa
     ui->btnSuaPB->setEnabled(!isEditing);
     ui->btnXoaPB->setEnabled(!isEditing);
     ui->btnRefresh->setEnabled(!isEditing);
@@ -79,7 +67,7 @@ void GD_QLPhongBan::setEditMode(bool isEditing)
         ui->txtMaPB->setReadOnly(true); // Khóa Mã PB khi Sửa
         ui->txtTenPB->setFocus();
     } else {
-        // Chuyển về/Reset sang chế độ THÊM
+        // Reset sang chế độ THÊM
         m_currentMode = EditMode::Add;
         ui->groupNhapLieu->setTitle("Thêm Phòng Ban Mới");
         ui->txtMaPB->clear();
@@ -191,12 +179,9 @@ void GD_QLPhongBan::clearChiTiet()
     ui->tableChiTietNV->setRowCount(0);
 }
 
-// --- LOGIC CHO CÁC NÚT CRUD ---
 
-// --- THÊM HÀM NÀY VÀO ---
 void GD_QLPhongBan::on_btnThemPB_clicked()
 {
-    // Đơn giản là gọi setEditMode(false) để reset form về trạng thái "Thêm"
     setEditMode(false);
 }
 // -------------------------
@@ -240,13 +225,9 @@ void GD_QLPhongBan::on_btnLuu_clicked()
         g_danhSachPhongBan.emplace_back(maPB.toStdString(), tenPB.toStdString());
     }
     else if (m_currentMode == EditMode::Edit) {
-        // Mã PB không được phép sửa khi Edit, nên không cần kiểm tra trùng mã mới
         PhongBan* pb = timPhongBanTheoMa(m_editingMaPB.toStdString());
         if (pb) {
-            // Chỉ cho sửa tên
             pb->setTenPhongBan(tenPB.toStdString());
-
-            // Cập nhật tên phòng ban cho tất cả nhân sự liên quan
             bool hasChanged = false;
             for (auto& ns : g_danhSachNhanSu) {
                 if (ns->getPhongBan().getMaPhongBan() == m_editingMaPB.toStdString()) {
@@ -259,7 +240,7 @@ void GD_QLPhongBan::on_btnLuu_clicked()
     }
     luuPhongBanVaoFile();
     refreshData();
-    setEditMode(false); // Trở về trạng thái Thêm
+    setEditMode(false);
 }
 
 void GD_QLPhongBan::on_btnHuy_clicked()

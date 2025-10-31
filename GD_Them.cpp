@@ -35,10 +35,10 @@ GD_Them::GD_Them(QWidget *parent) :
     {
         spinBox->setLocale(vnLocale); // Dùng locale VN
         spinBox->setGroupSeparatorShown(true); // Hiển thị dấu phân cách (VD: 1.000.000)
-        spinBox->setDecimals(0); // Tiền VNĐ không cần số thập phân
+        spinBox->setDecimals(0);
     }
 
-    // Cài đặt riêng cho hệ số lương
+    // Cài đặt cho hệ số lương
     ui->spinHeSoLuong_CT->setLocale(vnLocale);
     ui->spinHeSoLuong_QL->setLocale(vnLocale);
 
@@ -195,7 +195,7 @@ void capNhatThongTinTaiKhoan(const QString& maNV, const QString& emailMoi, const
             out << line << "\n";
             userFound = false; // Reset
         } else {
-            out << line << "\n"; // Ghi lại các dòng khác
+            out << line << "\n";
         }
     }
 

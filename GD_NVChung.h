@@ -38,6 +38,7 @@ private:
     // --- Biến lưu thông tin lương ---
     QString m_loaiNhanSu;
     int m_soNgayPhepConLai = 0;
+    double m_heSoLuong = 1.0;
     // Lương thử việc
     double m_phuCapThucTap = 0.0;
     // Lương chính thức
@@ -52,7 +53,8 @@ private:
     // --- Hàm xử lý ---
     void loadNhanSuData(const QString &maNV);
     void calculateAndDisplaySalary();
-    void loadMyLeaveRequests(); // <<< MỚI
+    void loadMyLeaveRequests();
+    void loadMyProjects();
 };
 
 #endif

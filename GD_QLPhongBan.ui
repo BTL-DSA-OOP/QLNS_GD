@@ -156,8 +156,7 @@ QWidget#rightPaneWidget {
 QFrame#frameControls {
     background-color: transparent;
     border: none;
-}
-</string>
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">

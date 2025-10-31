@@ -75,7 +75,7 @@ void GD_DangNhap::onLoginClicked()
     bool loginSuccess = false;
     QString userRole = "";
 
-    if (username == "admin" && password == "123") {
+    if (username == "admin" && password == "123@") {
         loginSuccess = true;
         userRole = "QuanLy";
     }

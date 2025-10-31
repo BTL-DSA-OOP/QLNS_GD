@@ -375,7 +375,7 @@ void docDuAnTuFile() {
     int soLuong = in.readLine().toInt();
 
     for (int i = 0; i < soLuong; ++i) {
-        if (in.atEnd()) break; // Đề phòng file bị cắt ngang
+        if (in.atEnd()) break;
 
         std::string maDA = in.readLine().toStdString();
         std::string tenDA = in.readLine().toStdString();

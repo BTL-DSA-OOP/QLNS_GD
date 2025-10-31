@@ -17,7 +17,7 @@
 #include <QFileDialog>
 #include <set>
 #include <cmath>
-
+#include <QProgressDialog>
 GD_Qly::GD_Qly(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::GD_Qly)
@@ -29,6 +29,7 @@ GD_Qly::GD_Qly(QWidget *parent)
     ui->mainStackedWidget->addWidget(m_qlpbWidget);
     m_qlduAnWidget = new GD_QLDuAn(this);
     ui->mainStackedWidget->addWidget(m_qlduAnWidget);
+    ui->btnNavSettings->setVisible(false);
 
     setupTable();
 
@@ -40,7 +41,7 @@ GD_Qly::GD_Qly(QWidget *parent)
     docPhongBanTuFile();
     docYeuCauNghiPhepTuFile();
 
-    // Tải dữ liệu cho các ComboBox lọc (MỚI)
+    // Tải dữ liệu cho các ComboBox
     loadFilterComboBoxes();
 
     // Thiết lập cho trang Chấm công
@@ -79,13 +80,6 @@ GD_Qly::GD_Qly(QWidget *parent)
     connect(ui->dateEditChamCong, &QDateEdit::dateChanged,
             this, &GD_Qly::on_btnLoadChamCong_clicked);
 
-    // <<< KẾT NỐI CHO LỌC VÀ XUẤT CSV MỚI
-    connect(ui->lineEditSearch, &QLineEdit::textChanged, this, &GD_Qly::filterNhanSuTable);
-    connect(ui->comboFilterPhongBan, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &GD_Qly::filterNhanSuTable);
-    connect(ui->comboFilterChucVu, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &GD_Qly::filterNhanSuTable);
-    connect(ui->btnExport, &QPushButton::clicked, this, &GD_Qly::on_btnExport_clicked);
 
     // Tải dữ liệu ban đầu
     on_btnLoadChamCong_clicked();
@@ -141,7 +135,7 @@ void GD_Qly::displayNhanSuTable(const std::vector<std::shared_ptr<NhanSu>>& list
     ui->tableEmployees->setSortingEnabled(true);
 }
 
-// --- HÀM TẢI COMBOBOX LỌC (MỚI) ---
+// --- HÀM TẢI COMBOBOX LỌC ---
 void GD_Qly::loadFilterComboBoxes()
 {
     // 1. Tải Phòng ban
@@ -167,7 +161,7 @@ void GD_Qly::loadFilterComboBoxes()
     }
 }
 
-// --- HÀM LỌC CHUNG (MỚI) ---
+// --- HÀM LỌC CHUNG  ---
 void GD_Qly::filterNhanSuTable()
 {
     QString query = ui->lineEditSearch->text().trimmed().toLower();
@@ -303,10 +297,9 @@ void GD_Qly::on_btnLoadChamCong_clicked()
     ui->tableChamCongTongHop->setSortingEnabled(true);
 }
 
-// --- HÀM XUẤT CSV (CẬP NHẬT ĐỂ XUẤT DANH SÁCH ĐÃ LỌC) ---
+// --- HÀM XUẤT CSV ---
 void GD_Qly::on_btnExport_clicked()
 {
-    // Sử dụng QFileDialog để chọn nơi lưu file CSV
     QString filePath = QFileDialog::getSaveFileName(this,
                                                     "Lưu File CSV Nhân Sự",
                                                     QDir::homePath() + "/danh_sach_nhan_su.csv",
@@ -317,15 +310,26 @@ void GD_Qly::on_btnExport_clicked()
     }
 
     QFile file(filePath);
-    // Mở file ở chế độ ghi, xóa nội dung cũ
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
         QMessageBox::critical(this, "Lỗi Ghi File", "Không thể mở file để ghi: " + file.errorString());
         return;
     }
 
+    QByteArray bom;
+    bom.append(0xEF);
+    bom.append(0xBB);
+    bom.append(0xBF);
+    file.write(bom);
+
     QTextStream out(&file);
 
-    // Lọc lại danh sách theo trạng thái bảng hiện tại
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        out.setCodec("UTF-8");  // Qt5
+    #else
+        out.setEncoding(QStringConverter::Utf8);  // Qt6
+    #endif
+
+    // Lọc dữ liệu
     QString query = ui->lineEditSearch->text().trimmed().toLower();
     QString maPBSelected = ui->comboFilterPhongBan->currentData().toString();
     QString chucVuSelected = ui->comboFilterChucVu->currentText();
@@ -366,38 +370,46 @@ void GD_Qly::on_btnExport_clicked()
         return;
     }
 
-    // Tiêu đề cột CSV
-    out << "MaNV,HoTen,LoaiNhanSu,PhongBan,MaPhongBan,ViTri,NgaySinh,GioiTinh,CCCD,SDT,Email,DiaChi,NgayVaoCongTy,TrinhDo,ChuyenNganh,LuongThucNhan" << "\n";
+    // Hàm helper
+    auto escapeCSV = [](const QString& field) -> QString {
+        if (field.contains(',') || field.contains('"') || field.contains('\n') || field.contains('\r')) {
+            return "\"" + QString(field).replace("\"", "\"\"") + "\"";
+        }
+        return field;
+    };
 
-    // Ghi dữ liệu từng nhân sự
+    // Tiêu đề
+    out << "MaNV,HoTen,LoaiNhanSu,PhongBan,MaPhongBan,ViTri,NgaySinh,GioiTinh,CCCD,SDT,Email,DiaChi,NgayVaoCongTy,TrinhDo,ChuyenNganh,LuongThucNhan\n";
+
+    // Ghi dữ liệu
     QLocale cLocale(QLocale::C);
 
     for (const auto& ns : listToExport) {
-        // Bọc trong dấu ngoặc kép (") để xử lý trường hợp có dấu phẩy trong dữ liệu
-        out << QString::fromStdString(ns->getMaNhanVien()) << ",";
-        out << "\"" << QString::fromStdString(ns->getHoTen()).replace("\"", "\"\"") << "\",";
-        out << QString::fromStdString(ns->getLoaiNhanSu()) << ",";
-        out << "\"" << QString::fromStdString(ns->getPhongBan().getTenPhongBan()).replace("\"", "\"\"") << "\",";
-        out << QString::fromStdString(ns->getPhongBan().getMaPhongBan()) << ",";
-        out << "\"" << QString::fromStdString(ns->getViTriCongViec()).replace("\"", "\"\"") << "\",";
-        out << QString::fromStdString(ns->getNgaySinh().toString()) << ",";
-        out << (ns->getGioiTinh() == GioiTinh::NAM ? "Nam" : "Nu") << ",";
-        out << QString::fromStdString(ns->getCCCD()) << ",";
-        out << QString::fromStdString(ns->getSoDienThoai()) << ",";
-        out << QString::fromStdString(ns->getEmail()) << ",";
-        out << "\"" << QString::fromStdString(ns->getDiaChi()).replace("\"", "\"\"") << "\",";
-        out << QString::fromStdString(ns->getNgayVaoCongTy().toString()) << ",";
-        out << "\"" << QString::fromStdString(ns->getTrinhDoHocVan()).replace("\"", "\"\"") << "\",";
-        out << "\"" << QString::fromStdString(ns->getChuyenNganh()).replace("\"", "\"\"") << "\",";
-        out << cLocale.toString(ns->tinhLuongThucNhan(), 'f', 0);
-
+        out << escapeCSV(QString::fromStdString(ns->getMaNhanVien())) << ",";
+        out << escapeCSV(QString::fromStdString(ns->getHoTen())) << ",";
+        out << escapeCSV(QString::fromStdString(ns->getLoaiNhanSu())) << ",";
+        out << escapeCSV(QString::fromStdString(ns->getPhongBan().getTenPhongBan())) << ",";
+        out << escapeCSV(QString::fromStdString(ns->getPhongBan().getMaPhongBan())) << ",";
+        out << escapeCSV(QString::fromStdString(ns->getViTriCongViec())) << ",";
+        out << escapeCSV(QString::fromStdString(ns->getNgaySinh().toString())) << ",";
+        out << escapeCSV(ns->getGioiTinh() == GioiTinh::NAM ? "Nam" : "Nữ") << ",";
+        out << escapeCSV(QString::fromStdString(ns->getCCCD())) << ",";
+        out << escapeCSV(QString::fromStdString(ns->getSoDienThoai())) << ",";
+        out << escapeCSV(QString::fromStdString(ns->getEmail())) << ",";
+        out << escapeCSV(QString::fromStdString(ns->getDiaChi())) << ",";
+        out << escapeCSV(QString::fromStdString(ns->getNgayVaoCongTy().toString())) << ",";
+        out << escapeCSV(QString::fromStdString(ns->getTrinhDoHocVan())) << ",";
+        out << escapeCSV(QString::fromStdString(ns->getChuyenNganh())) << ",";
+        out << escapeCSV(cLocale.toString(ns->tinhLuongThucNhan(), 'f', 0));
         out << "\n";
     }
 
     file.close();
-    QMessageBox::information(this, "Xuất CSV", QString("Đã xuất thành công %1 hồ sơ nhân sự vào:\n%2")
-                                                     .arg(listToExport.size())
-                                                     .arg(filePath));
+
+    QMessageBox::information(this, "Xuất CSV",
+                             QString("Đã xuất thành công %1 hồ sơ nhân sự vào:\n%2")
+                                 .arg(listToExport.size())
+                                 .arg(filePath));
 }
 
 

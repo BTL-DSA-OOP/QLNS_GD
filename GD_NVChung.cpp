@@ -7,21 +7,18 @@
 #include <QMessageBox>
 #include <QDateTime>
 #include <QLocale>
-#include <cmath> // For qCeil
+#include <cmath>
 
-// Cập nhật constructor
+// Constructor
 GD_NVChung::GD_NVChung(const QString &maNV, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::GD_NVChung)
     , m_maNV(maNV)
 {
     ui->setupUi(this);
-    // ui->btnNavSalary->setVisible(false);
     loadNhanSuData(m_maNV);
     calculateAndDisplaySalary();
-    ui->mainStackedWidget->setCurrentIndex(0); // Bắt đầu ở trang thông tin
-    // ui->btnNavRelatives->setVisible(false);
-    // Cài đặt ReadOnly cho trang thông tin
+    ui->mainStackedWidget->setCurrentIndex(0);
     ui->lineEdit_maNV->setReadOnly(true);
     ui->lineEdit_hoTen->setReadOnly(true);
     ui->lineEdit_cccd->setReadOnly(true);
@@ -34,17 +31,20 @@ GD_NVChung::GD_NVChung(const QString &maNV, QWidget *parent)
     ui->lineEdit_phongBan->setReadOnly(true);
     ui->dateEdit_ngayVao->setReadOnly(true);
     ui->lineEdit_thamNien->setReadOnly(true);
-
-    // THÊM MỚI CHO TRANG XIN NGHỈ
     ui->dateEdit_ngayBatDau->setDate(QDate::currentDate());
     ui->dateEdit_ngayBatDau->setMinimumDate(QDate::currentDate());
-    // KẾT THÚC THÊM MỚI
-
-    docYeuCauNghiPhepTuFile(); // <<< Tải dữ liệu nghỉ phép
-    loadMyLeaveRequests();     // <<< Hiển thị yêu cầu của tôi
-    updateLeaveDaysDisplay();  // <<< Hiển thị số ngày phép còn lại
-    // Tải lịch sử chấm công khi mở
+    docYeuCauNghiPhepTuFile(); // Tải dữ liệu nghỉ phép
+    docDuAnTuFile();
+    loadMyLeaveRequests();     //  Hiển thị yêu cầu
+    updateLeaveDaysDisplay();  //  Hiển thị số ngày phép còn lại
     on_btnAttendanceHistory_clicked();
+    QHeaderView *header = ui->tableProjects->horizontalHeader();
+    if (header) { // Kiểm tra cho an toàn
+        header->setSectionResizeMode(0, QHeaderView::ResizeToContents); // Mã DA
+        header->setSectionResizeMode(1, QHeaderView::Stretch);         // Tên DA
+        header->setSectionResizeMode(2, QHeaderView::ResizeToContents); // Trạng thái
+        header->setSectionResizeMode(3, QHeaderView::ResizeToContents); // Người PT
+    }
 }
 
 GD_NVChung::~GD_NVChung()
@@ -59,24 +59,20 @@ void GD_NVChung::loadNhanSuData(const QString &maNV)
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return;
     }
-    // Tải lại toàn bộ DS Nhân sự để có thể dùng std::dynamic_pointer_cast
+    // Tải lại toàn bộ DS Nhân sự
     docNhanSuTuFile();
     auto ns = timNhanSuTheoMa(maNV.toStdString());
     if (ns) {
-        // Sửa lỗi: Gọi hàm getSoNgayPhepConLai()
+        // hàm getSoNgayPhepConLai()
         if (auto ct = std::dynamic_pointer_cast<NhanVienChinhThuc>(ns)) {
             m_soNgayPhepConLai = ct->getSoNgayPhepConLai();
-            ui->btnNavSalary->setVisible(true);
             ui->btnNavRelatives->setVisible(true);
         } else if (auto ql = std::dynamic_pointer_cast<QuanLy>(ns)) {
-            // QuanLy hiện tại đã có getSoNgayPhepConLai() sau khi fix ClassNhanSu.h
             m_soNgayPhepConLai = ql->getSoNgayPhepConLai();
-            ui->btnNavSalary->setVisible(true);
             ui->btnNavRelatives->setVisible(true);
         } else {
             // Nhân viên thử việc không có phép
             m_soNgayPhepConLai = 0;
-            ui->btnNavSalary->setVisible(false);
             ui->btnNavRelatives->setVisible(false);
         }
     }
@@ -121,6 +117,9 @@ void GD_NVChung::loadNhanSuData(const QString &maNV)
                     ui->dateEdit_ngayVao->setDate(ngayVao);
                     int years = QDate::currentDate().year() - ngayVao.year();
                     ui->lineEdit_thamNien->setText(QString::number(years) + " năm");
+                }
+                else if (line.startsWith("HeSoLuong: ")) {
+                    m_heSoLuong = line.mid(11).toDouble();
                 }
                 else if (line.startsWith("PhuCapThucTap: ")) {
                     m_phuCapThucTap = line.mid(15).toDouble();
@@ -181,7 +180,11 @@ void GD_NVChung::calculateAndDisplaySalary()
         ui->groupBox_luong_CT->setVisible(true);
 
         double tongPhuCap = m_phuCapChucVu + m_phuCapAnTrua + m_phuCapXangXe;
-        double tongThuNhap = m_luongCoBan_CT + tongPhuCap;
+
+        //  BẮT ĐẦU SỬA
+        double tongThuNhap = (m_luongCoBan_CT * m_heSoLuong) + tongPhuCap;
+        // KẾT THÚC SỬA >>>
+
         double bhxh = tongThuNhap * 0.105; // Giả định BHXH, BHYT, BHTN là 10.5%
         double thueTNCN = (tongThuNhap > 11000000) ? (tongThuNhap - 11000000) * 0.1 : 0; // Giả định thuế bậc 1
         double giamTru = bhxh + thueTNCN;
@@ -194,10 +197,9 @@ void GD_NVChung::calculateAndDisplaySalary()
     }
     else if (m_loaiNhanSu == "Quản lý") {
         ui->groupBox_luong_QL->setVisible(true);
-
-        double tongThuNhap = m_luongCoBan_QL + m_phuCapQuanLy;
+        double tongThuNhap = (m_luongCoBan_QL * m_heSoLuong) + m_phuCapQuanLy;
         double bhxh = tongThuNhap * 0.105;
-        double thueTNCN = (tongThuNhap > 11000000) ? (tongThuNhap - 11000000) * 0.15 : 0; // Giả định thuế bậc cao hơn
+        double thueTNCN = (tongThuNhap > 11000000) ? (tongThuNhap - 11000000) * 0.15 : 0;
         double giamTru = bhxh + thueTNCN;
         double thucNhan = tongThuNhap - giamTru;
 
@@ -207,7 +209,6 @@ void GD_NVChung::calculateAndDisplaySalary()
         ui->lineEdit_thucNhan_QL->setText(vietnamese.toString(thucNhan, 'f', 0) + " VNĐ");
     }
 }
-
 // --- HÀM XỬ LÝ CHẤM CÔNG  ---
 
 void GD_NVChung::on_btnCheckIn_clicked()
@@ -370,9 +371,9 @@ void GD_NVChung::on_btnAttendanceHistory_clicked()
     file.close();
 }
 
-// --- CÁC HÀM XỬ LÝ NGHỈ PHÉP ---
+// --- CÁC HÀM NGHỈ PHÉP ---
 
-// Load các yêu cầu nghỉ phép của nhân viên hiện tại lên QTableWidget
+// Load các yêu cầu nghỉ phép của nhân viên
 void GD_NVChung::loadMyLeaveRequests() {
     ui->tableLeaveRequests->setRowCount(0);
     ui->tableLeaveRequests->setSortingEnabled(false);
@@ -435,7 +436,7 @@ void GD_NVChung::on_btnSendRequest_clicked() {
         QMessageBox::warning(this, "Lỗi", "Vui lòng nhập lý do nghỉ phép.");
         return;
     }
-    // 3. Tính toán ngày kết thúc (Ước tính)
+    // 3. Tính toán ngày kết thúc
     QDate ngayKetThuc = ngayBatDau.addDays(qCeil(soNgayNghi) - 1);
 
     // 4. Tạo ID mới
@@ -466,9 +467,58 @@ void GD_NVChung::on_btnSendRequest_clicked() {
     ui->textEdit_lyDo->clear();
     ui->lineEdit_soNgayNghi->setText("1");
     ui->dateEdit_ngayBatDau->setDate(QDate::currentDate());
-}
+}void GD_NVChung::loadMyProjects() {
+    ui->tableProjects->setRowCount(0);
+    ui->tableProjects->setSortingEnabled(false);
 
-// CÁC HÀM ĐIỀU HƯỚNG ĐÃ SỬA INDEX
+    std::string currentMaNV = m_maNV.toStdString();
+    int row = 0;
+
+    // g_danhSachDuAn đã được đọc từ file trong constructor
+    for (const auto& duAn : g_danhSachDuAn) {
+        // 1. Kiểm tra xem có phải là Người Phụ Trách không
+        bool isManager = (duAn.getNguoiPhuTrach() == currentMaNV);
+
+        // 2. Kiểm tra xem có phải là Thành Viên không
+        bool isMember = false;
+        const auto& thanhVien = duAn.getDanhSachThanhVien();
+        for (const auto& maTV : thanhVien) {
+            if (maTV == currentMaNV) {
+                isMember = true;
+                break;
+            }
+        }
+
+        // 3. Nếu là 1 trong 2 thì hiển thị
+        if (isMember || isManager) {
+            // --- KẾT THÚC SỬA ---
+
+            ui->tableProjects->insertRow(row);
+
+            // Cột 0: Mã Dự án
+            ui->tableProjects->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(duAn.getMaDuAn())));
+
+            // Cột 1: Tên Dự án
+            ui->tableProjects->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(duAn.getTenDuAn())));
+
+            // Cột 2: Trạng thái
+            QString trangThai = duAn.isDaHoanThanh() ? "Hoàn thành" : "Đang thực hiện";
+            QTableWidgetItem *trangThaiItem = new QTableWidgetItem(trangThai);
+            if(duAn.isDaHoanThanh()) {
+                trangThaiItem->setForeground(QBrush(Qt::darkGreen));
+            }
+            ui->tableProjects->setItem(row, 2, trangThaiItem);
+
+            // Cột 3: Người phụ trách
+            auto nguoiPhuTrach = timNhanSuTheoMa(duAn.getNguoiPhuTrach()); //
+            QString tenPhuTrach = nguoiPhuTrach ? QString::fromStdString(nguoiPhuTrach->getHoTen()) : "N/A"; //
+            ui->tableProjects->setItem(row, 3, new QTableWidgetItem(tenPhuTrach));
+
+            row++;
+        }
+    }
+    ui->tableProjects->setSortingEnabled(true);
+}
 void GD_NVChung::on_btnNavLeaveRequest_clicked() {
     ui->mainStackedWidget->setCurrentIndex(3); // Index 3: Xin nghỉ
     loadMyLeaveRequests(); // Tải lại danh sách mỗi khi chuyển trang
@@ -477,6 +527,7 @@ void GD_NVChung::on_btnNavLeaveRequest_clicked() {
 
 void GD_NVChung::on_btnNavProjects_clicked() {
     ui->mainStackedWidget->setCurrentIndex(4); // Index 4: Dự án
+    loadMyProjects();
 }
 
 void GD_NVChung::on_btnNavRelatives_clicked() {
