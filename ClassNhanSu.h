@@ -138,7 +138,6 @@ protected:
     std::string trinhDoHocVan;
     std::string chuyenNganh;
 
-    // <<< MỚI: Thêm hàm protected để các lớp con gọi (Refactor 1)
     void hienThiThongTinCoBan() const
     {
         std::cout << "Ma NV: " << maNhanVien << std::endl;
@@ -305,19 +304,13 @@ public:
     void setPhuCapThucTap(double pc) { phuCapThucTap = pc; }
 };
 
-// =========================================================================
-// <<< MỚI: CLASS NhanVienTrungGian (LỚP TRUNG GIAN) >>>
-// =========================================================================
 class NhanVienTrungGian : public NhanSu
 {
 protected:
-    // --- CÁC THUỘC TÍNH CHUNG ĐƯỢC CHUYỂN LÊN TỪ 2 LỚP CON ---
     double luongCoBan;
     double heSoLuong;
     int soNgayPhepConLai;
     std::vector<ThanNhan> danhSachThanNhan;
-
-    // <<< MỚI: Thêm hàm protected để các lớp con gọi (Refactor 2)
     void hienThiThongTinCoHuu() const
     {
         hienThiThongTinCoBan(); // Gọi hàm của NhanSu
@@ -327,10 +320,8 @@ protected:
     }
 
 public:
-    // Constructor mặc định
     NhanVienTrungGian() : NhanSu(), luongCoBan(0.0), heSoLuong(1.0), soNgayPhepConLai(12) {}
 
-    // Constructor đầy đủ
     NhanVienTrungGian(const std::string &ma, const std::string &ht, const std::string &cccd,
                   const NgayThang &ns, GioiTinh gt, double luong, double heSo, int phep,
                   const std::string &sdt, const std::string &em, const std::string &dc,
@@ -341,13 +332,9 @@ public:
         : NhanSu(ma, ht, cccd, ns, gt, sdt, em, dc, stk, nganHang, ngayVao, viTri, pb, trinhDo, nganh, tt),
         luongCoBan(luong), heSoLuong(heSo), soNgayPhepConLai(phep)
     {
-        // Thân nhân sẽ được thêm qua hàm themThanNhan()
     }
 
-    // Destructor ảo
     virtual ~NhanVienTrungGian() = default;
-
-    // --- CÁC HÀM CHUNG ĐƯỢC CHUYỂN LÊN TỪ 2 LỚP CON ---
 
     // Lương
     double getLuongCoBan() const { return luongCoBan; }
@@ -384,23 +371,11 @@ public:
             tn.hienThi();
         }
     }
-
-    // Các hàm ảo thuần túy từ NhanSu vẫn chưa được implement,
-    // nên lớp này vẫn là lớp trừu tượng (abstract).
-    // virtual double tinhLuongThucNhan() const = 0;
-    // virtual std::string getLoaiNhanSu() const = 0;
-    // virtual void hienThiThongTin() const = 0;
 };
 
-// =========================================================================
-// --- CLASS NHANVIENCHINHTHUC (ĐÃ SỬA) ---
-// =========================================================================
 class NhanVienChinhThuc : public NhanVienTrungGian // <<< SỬA: Kế thừa từ NhanVienTrungGian
 {
 private:
-    // <<< XÓA: luongCoBan, heSoLuong, soNgayPhepConLai, danhSachThanNhan (đã chuyển lên NhanVienTrungGian)
-
-    // Các thuộc tính riêng
     double phuCapChucVu;
     double phuCapAnTrua;
     double phuCapXangXe;
@@ -408,10 +383,7 @@ private:
     std::vector<std::string> kyLuat;
 
 public:
-    // Constructor mặc định
     NhanVienChinhThuc() : NhanVienTrungGian(), phuCapChucVu(0.0), phuCapAnTrua(0.0), phuCapXangXe(0.0) {}
-
-    // Constructor đầy đủ (Sửa lại)
     NhanVienChinhThuc(const std::string &ma, const std::string &ht, const std::string &cccd,
                       const NgayThang &ns, GioiTinh gt, double luong, double heSo = 1.0,
                       double pcChucVu = 0, double pcAnTrua = 0, double pcXangXe = 0,
@@ -420,14 +392,11 @@ public:
                       const std::string &nganHang = "", const NgayThang &ngayVao = NgayThang(),
                       const std::string &viTri = "", const PhongBan &pb = PhongBan(),
                       const std::string &trinhDo = "", const std::string &nganh = "")
-        // <<< SỬA: Gọi constructor của NhanVienTrungGian
         : NhanVienTrungGian(ma, ht, cccd, ns, gt, luong, heSo, phep, sdt, em, dc, stk, nganHang, ngayVao, viTri, pb, trinhDo, nganh),
         phuCapChucVu(pcChucVu), phuCapAnTrua(pcAnTrua), phuCapXangXe(pcXangXe) {}
 
-    // Override các phương thức ảo
     double tinhLuongThucNhan() const override
     {
-        // luongCoBan và heSoLuong vẫn truy cập được vì là protected
         double tongThuNhap = luongCoBan * heSoLuong + phuCapChucVu + phuCapAnTrua + phuCapXangXe;
         double bhxh = tongThuNhap * 0.105; // BHXH + BHYT + BHTN
         double thue = tongThuNhap > 11000000 ? (tongThuNhap - 11000000) * 0.1 : 0;
@@ -441,7 +410,6 @@ public:
         std::cout << "=== NHAN VIEN CHINH THUC ===" << std::endl;
         hienThiThongTinCoHuu(); // <<< SỬA: Gọi hàm của NhanVienTrungGian
 
-        // Chỉ hiển thị thông tin riêng
         std::cout << "Phu cap chuc vu: " << phuCapChucVu << " VND" << std::endl;
         std::cout << "Phu cap an trua: " << phuCapAnTrua << " VND" << std::endl;
         std::cout << "Phu cap xang xe: " << phuCapXangXe << " VND" << std::endl;
@@ -451,7 +419,6 @@ public:
         hienThiThanNhan(); // Hàm này đã được kế thừa từ NhanVienTrungGian
     }
 
-    // Getters & Setters riêng (Các hàm chung đã bị xóa)
     double getPhuCapChucVu() const { return phuCapChucVu; }
     double getPhuCapAnTrua() const { return phuCapAnTrua; }
     double getPhuCapXangXe() const { return phuCapXangXe; }
@@ -460,26 +427,15 @@ public:
     void setPhuCapAnTrua(double pc) { phuCapAnTrua = pc; }
     void setPhuCapXangXe(double pc) { phuCapXangXe = pc; }
 
-    // <<< XÓA: getLuongCoBan, getHeSoLuong, capNhatLuong, setLuongCoBan, setHeSoLuong
-    // <<< XÓA: getSoNgayPhepConLai, nghiPhep, capNhatPhep
-    // <<< XÓA: themThanNhan, getDanhSachThanNhan, xoaTatCaThanNhan, hienThiThanNhan
-
-    // Getters/Setters riêng cho Khen thưởng/Kỷ luật
     void themKhenThuong(const std::string &kt) { khenThuong.push_back(kt); }
     void themKyLuat(const std::string &kl) { kyLuat.push_back(kl); }
     const std::vector<std::string> &getKhenThuong() const { return khenThuong; }
     const std::vector<std::string> &getKyLuat() const { return kyLuat; }
 };
 
-// =========================================================================
-// --- CLASS QUANLY (ĐÃ SỬA) ---
-// =========================================================================
 class QuanLy : public NhanVienTrungGian // <<< SỬA: Kế thừa từ NhanVienTrungGian
 {
 private:
-    // <<< XÓA: luongCoBan, heSoLuong, soNgayPhepConLai, danhSachThanNhan (đã chuyển lên NhanVienTrungGian)
-
-    // Các thuộc tính riêng
     double phuCapQuanLy;
     double thuongHieuQua;
     std::vector<std::string> phongBanQuanLy;
@@ -487,13 +443,11 @@ private:
     int soLuongNhanVienQuanLy;
 
 public:
-    // Constructor mặc định
     QuanLy() : NhanVienTrungGian(), phuCapQuanLy(0.0), thuongHieuQua(0.0), soLuongNhanVienQuanLy(0)
     {
         heSoLuong = 1.5; // Ghi đè hệ số lương mặc định
     }
 
-    // Constructor đầy đủ (Sửa lại)
     QuanLy(const std::string &ma, const std::string &ht, const std::string &cccd,
            const NgayThang &ns, GioiTinh gt, double luong, double heSo = 1.5,
            double pcQuanLy = 0, double thuong = 0, int soNVQuanLy = 0,
@@ -503,14 +457,11 @@ public:
            const std::string &viTri = "", const PhongBan &pb = PhongBan(),
            const std::string &trinhDo = "", const std::string &nganh = "",
            int phep = 12)
-        // <<< SỬA: Gọi constructor của NhanVienTrungGian
         : NhanVienTrungGian(ma, ht, cccd, ns, gt, luong, heSo, phep, sdt, em, dc, stk, nganHang, ngayVao, viTri, pb, trinhDo, nganh),
         phuCapQuanLy(pcQuanLy), thuongHieuQua(thuong), soLuongNhanVienQuanLy(soNVQuanLy) {}
 
-    // Override các phương thức ảo
     double tinhLuongThucNhan() const override
     {
-        // luongCoBan và heSoLuong vẫn truy cập được vì là protected
         double tongThuNhap = luongCoBan * heSoLuong + phuCapQuanLy + thuongHieuQua;
         double bhxh = tongThuNhap * 0.105;
         double thue = tongThuNhap > 11000000 ? (tongThuNhap - 11000000) * 0.15 : 0;
@@ -524,14 +475,13 @@ public:
         std::cout << "=== QUAN LY ===" << std::endl;
         hienThiThongTinCoHuu(); // <<< SỬA: Gọi hàm của NhanVienTrungGian
 
-        // Chỉ hiển thị thông tin riêng
         std::cout << "Phu cap quan ly: " << phuCapQuanLy << " VND" << std::endl;
         std::cout << "Thuong hieu qua: " << thuongHieuQua << " VND" << std::endl;
         std::cout << "Luong thuc nhan: " << tinhLuongThucNhan() << " VND" << std::endl;
         std::cout << "So luong nhan vien quan ly: " << soLuongNhanVienQuanLy << std::endl;
         std::cout << "So du an phu trach: " << duAnPhuTrach.size() << std::endl;
         std::cout << "\n--- THAN NHAN ---" << std::endl;
-        hienThiThanNhan(); // Hàm này đã được kế thừa từ NhanVienTrungGian
+        hienThiThanNhan();
     }
 
     // Getters & Setters riêng
@@ -539,11 +489,6 @@ public:
     void setPhuCapQuanLy(double pc) { phuCapQuanLy = pc; }
     void setThuongHieuQua(double thuong) { thuongHieuQua = thuong; }
     void setSoLuongNhanVienQuanLy(int soLuong) { soLuongNhanVienQuanLy = soLuong; }
-
-    // <<< XÓA: getLuongCoBan, getHeSoLuong, capNhatLuong, setLuongCoBan, setHeSoLuong
-    // <<< XÓA: getSoNgayPhepConLai, nghiPhep, capNhatPhep
-    // <<< XÓA: themThanNhan, getDanhSachThanNhan, xoaTatCaThanNhan, hienThiThanNhan
-
     // Getters/Setters riêng cho Dự án/Phòng ban
     void themPhongBanQuanLy(const std::string &maPB) { phongBanQuanLy.push_back(maPB); }
     void themDuAnPhuTrach(const std::string &maDuAn) { duAnPhuTrach.push_back(maDuAn); }
