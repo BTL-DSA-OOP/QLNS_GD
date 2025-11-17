@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 #include <string>
-#include "ClassNhanSu.h" // Đã bao gồm DuAn, ClassNhanSu, PhongBan...
+#include "ClassNhanSu.h"
 #include <QString>
 #include "ClassNghiPhep.h"
 
@@ -20,21 +20,21 @@ DuAn* timDuAnTheoMa(const std::string& maDA);
 void luuDuAnVaoFile();
 void docDuAnTuFile();
 
-// --- THÊM MỚI CHO PHÒNG BAN ---
+// Biến toàn cục cho Phòng Ban
+
 extern std::vector<PhongBan> g_danhSachPhongBan;
 PhongBan* timPhongBanTheoMa(const std::string& maPB);
 void docPhongBanTuFile();
 void luuPhongBanVaoFile();
-// --- KẾT THÚC THÊM MỚI ---
 
-// --- THÊM MỚI CHO NGHỈ PHÉP ---
+// Biến toàn cục cho Nghỉ phép
+
 extern std::vector<YeuCauNghiPhep> g_danhSachYeuCauNghiPhep;
 void docYeuCauNghiPhepTuFile();
 void luuYeuCauNghiPhepVaoFile();
-// --- KẾT THÚC THÊM MỚI ---
 
 // Hàm xử lý tài khoản
 bool isUsernameTaken(const QString& username);
 void xoaTaiKhoan(const std::string& tenNguoiDung);
 
-#endif // NHANSUDATA_H
+#endif

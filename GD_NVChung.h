@@ -34,8 +34,6 @@ private slots:
 private:
     Ui::GD_NVChung *ui;
     QString m_maNV; // Mã nhân viên đang đăng nhập
-
-    // --- Biến lưu thông tin lương ---
     QString m_loaiNhanSu;
     int m_soNgayPhepConLai = 0;
     double m_heSoLuong = 1.0;
@@ -50,7 +48,7 @@ private:
     double m_luongCoBan_QL = 0.0;
     double m_phuCapQuanLy = 0.0;
 
-    // --- Hàm xử lý ---
+    // Hàm xử lý
     void loadNhanSuData(const QString &maNV);
     void calculateAndDisplaySalary();
     void loadMyLeaveRequests();

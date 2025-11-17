@@ -24,24 +24,19 @@ GD_NVChung::GD_NVChung(const QString &maNV, QWidget *parent)
     ui->lineEdit_cccd->setReadOnly(true);
     ui->dateEdit_ngaySinh->setReadOnly(true);
     ui->comboBox_gioiTinh->setEnabled(false);
-    ui->lineEdit_sdt->setReadOnly(true);
-    ui->lineEdit_email->setReadOnly(true);
-    ui->lineEdit_diaChi->setReadOnly(true);
-    ui->lineEdit_viTri->setReadOnly(true);
-    ui->lineEdit_phongBan->setReadOnly(true);
     ui->dateEdit_ngayVao->setReadOnly(true);
     ui->lineEdit_thamNien->setReadOnly(true);
     ui->dateEdit_ngayBatDau->setDate(QDate::currentDate());
     ui->dateEdit_ngayBatDau->setMinimumDate(QDate::currentDate());
-    docYeuCauNghiPhepTuFile(); // Tải dữ liệu nghỉ phép
+    docYeuCauNghiPhepTuFile();
     docDuAnTuFile();
-    loadMyLeaveRequests();     //  Hiển thị yêu cầu
-    updateLeaveDaysDisplay();  //  Hiển thị số ngày phép còn lại
+    loadMyLeaveRequests();
+    updateLeaveDaysDisplay();
     on_btnAttendanceHistory_clicked();
     QHeaderView *header = ui->tableProjects->horizontalHeader();
     if (header) { // Kiểm tra cho an toàn
         header->setSectionResizeMode(0, QHeaderView::ResizeToContents); // Mã DA
-        header->setSectionResizeMode(1, QHeaderView::Stretch);         // Tên DA
+        header->setSectionResizeMode(1, QHeaderView::Stretch);          // Tên DA
         header->setSectionResizeMode(2, QHeaderView::ResizeToContents); // Trạng thái
         header->setSectionResizeMode(3, QHeaderView::ResizeToContents); // Người PT
     }
@@ -63,7 +58,6 @@ void GD_NVChung::loadNhanSuData(const QString &maNV)
     docNhanSuTuFile();
     auto ns = timNhanSuTheoMa(maNV.toStdString());
     if (ns) {
-        // hàm getSoNgayPhepConLai()
         if (auto ct = std::dynamic_pointer_cast<NhanVienChinhThuc>(ns)) {
             m_soNgayPhepConLai = ct->getSoNgayPhepConLai();
             ui->btnNavRelatives->setVisible(true);
@@ -71,7 +65,6 @@ void GD_NVChung::loadNhanSuData(const QString &maNV)
             m_soNgayPhepConLai = ql->getSoNgayPhepConLai();
             ui->btnNavRelatives->setVisible(true);
         } else {
-            // Nhân viên thử việc không có phép
             m_soNgayPhepConLai = 0;
             ui->btnNavRelatives->setVisible(false);
         }
@@ -180,13 +173,9 @@ void GD_NVChung::calculateAndDisplaySalary()
         ui->groupBox_luong_CT->setVisible(true);
 
         double tongPhuCap = m_phuCapChucVu + m_phuCapAnTrua + m_phuCapXangXe;
-
-        //  BẮT ĐẦU SỬA
         double tongThuNhap = (m_luongCoBan_CT * m_heSoLuong) + tongPhuCap;
-        // KẾT THÚC SỬA >>>
-
         double bhxh = tongThuNhap * 0.105; // Giả định BHXH, BHYT, BHTN là 10.5%
-        double thueTNCN = (tongThuNhap > 11000000) ? (tongThuNhap - 11000000) * 0.1 : 0; // Giả định thuế bậc 1
+        double thueTNCN = (tongThuNhap > 11000000) ? (tongThuNhap - 11000000) * 0.1 : 0;
         double giamTru = bhxh + thueTNCN;
         double thucNhan = tongThuNhap - giamTru;
 
@@ -209,7 +198,6 @@ void GD_NVChung::calculateAndDisplaySalary()
         ui->lineEdit_thucNhan_QL->setText(vietnamese.toString(thucNhan, 'f', 0) + " VNĐ");
     }
 }
-// --- HÀM XỬ LÝ CHẤM CÔNG  ---
 
 void GD_NVChung::on_btnCheckIn_clicked()
 {
@@ -261,8 +249,6 @@ void GD_NVChung::on_btnCheckIn_clicked()
         }
     }
     file.close();
-
-    // Tải lại bảng lịch sử
     on_btnAttendanceHistory_clicked();
 }
 
@@ -285,18 +271,15 @@ void GD_NVChung::on_btnCheckOut_clicked()
     bool foundToday = false;
     bool alreadyCheckedOut = false;
     int lineIndex = -1; // Vị trí của dòng cần sửa
-    // Đọc tất cả nội dung file
     while (!stream.atEnd()) {
         lines.append(stream.readLine());
     }
-
-    // Tìm dòng của ngày hôm nay
     for (int i = 0; i < lines.size(); ++i) {
         if (lines[i].startsWith(dateStr)) {
             foundToday = true;
             lineIndex = i;
             QStringList parts = lines[i].split(',');
-            if (parts.size() == 4 && !parts[2].isEmpty()) { // parts[2] là Giờ ra
+            if (parts.size() == 4 && !parts[2].isEmpty()) {
                 alreadyCheckedOut = true;
             }
             break;
@@ -323,7 +306,6 @@ void GD_NVChung::on_btnCheckOut_clicked()
         lines[lineIndex] = parts.join(",");
         QMessageBox::information(this, "Chấm công", "Đã check-out thành công!");
     } else {
-        // Xử lý trường hợp file bị lỗi (ít khi xảy ra)
         QMessageBox::critical(this, "Lỗi", "Dữ liệu file chấm công bị lỗi.");
         file.close();
         return;
@@ -337,8 +319,6 @@ void GD_NVChung::on_btnCheckOut_clicked()
         }
     }
     file.close();
-
-    // Tải lại bảng lịch sử
     on_btnAttendanceHistory_clicked();
 }
 
@@ -370,8 +350,6 @@ void GD_NVChung::on_btnAttendanceHistory_clicked()
     ui->tableAttendance->setSortingEnabled(true); // Bật lại sắp xếp
     file.close();
 }
-
-// --- CÁC HÀM NGHỈ PHÉP ---
 
 // Load các yêu cầu nghỉ phép của nhân viên
 void GD_NVChung::loadMyLeaveRequests() {
@@ -410,7 +388,7 @@ void GD_NVChung::loadMyLeaveRequests() {
 }
 
 void GD_NVChung::on_btnSendRequest_clicked() {
-    // 1. Lấy dữ liệu từ UI
+    // Lấy dữ liệu từ UI
     QDate ngayBatDau = ui->dateEdit_ngayBatDau->date();
 
     // Dùng locale::C để đảm bảo dấu thập phân là '.'
@@ -436,14 +414,10 @@ void GD_NVChung::on_btnSendRequest_clicked() {
         QMessageBox::warning(this, "Lỗi", "Vui lòng nhập lý do nghỉ phép.");
         return;
     }
-    // 3. Tính toán ngày kết thúc
     QDate ngayKetThuc = ngayBatDau.addDays(qCeil(soNgayNghi) - 1);
-
-    // 4. Tạo ID mới
     int newIDCount = g_danhSachYeuCauNghiPhep.size();
     std::string newMaYC = YeuCauNghiPhep::generateNewID(newIDCount);
 
-    // 5. Tạo đối tượng YeuCauNghiPhep
     YeuCauNghiPhep newRequest(
         newMaYC,
         m_maNV.toStdString(),
@@ -455,14 +429,9 @@ void GD_NVChung::on_btnSendRequest_clicked() {
         "" // Người duyệt ban đầu là trống
         );
 
-    // 6. Thêm vào danh sách toàn cục và lưu file
     g_danhSachYeuCauNghiPhep.push_back(newRequest);
     luuYeuCauNghiPhepVaoFile();
-
-    // 7. Cập nhật UI
     loadMyLeaveRequests();
-
-    // 8. Thông báo và reset form
     QMessageBox::information(this, "Gửi yêu cầu", "Yêu cầu nghỉ phép đã được gửi thành công. Vui lòng chờ phê duyệt.");
     ui->textEdit_lyDo->clear();
     ui->lineEdit_soNgayNghi->setText("1");
@@ -473,8 +442,6 @@ void GD_NVChung::on_btnSendRequest_clicked() {
 
     std::string currentMaNV = m_maNV.toStdString();
     int row = 0;
-
-    // g_danhSachDuAn đã được đọc từ file trong constructor
     for (const auto& duAn : g_danhSachDuAn) {
         // 1. Kiểm tra xem có phải là Người Phụ Trách không
         bool isManager = (duAn.getNguoiPhuTrach() == currentMaNV);
@@ -488,11 +455,7 @@ void GD_NVChung::on_btnSendRequest_clicked() {
                 break;
             }
         }
-
-        // 3. Nếu là 1 trong 2 thì hiển thị
         if (isMember || isManager) {
-            // --- KẾT THÚC SỬA ---
-
             ui->tableProjects->insertRow(row);
 
             // Cột 0: Mã Dự án
@@ -520,7 +483,7 @@ void GD_NVChung::on_btnSendRequest_clicked() {
     ui->tableProjects->setSortingEnabled(true);
 }
 void GD_NVChung::on_btnNavLeaveRequest_clicked() {
-    ui->mainStackedWidget->setCurrentIndex(3); // Index 3: Xin nghỉ
+    ui->mainStackedWidget->setCurrentIndex(3);
     loadMyLeaveRequests(); // Tải lại danh sách mỗi khi chuyển trang
     updateLeaveDaysDisplay(); // Tải lại số ngày phép
 }

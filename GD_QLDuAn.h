@@ -3,14 +3,14 @@
 
 #include <QWidget>
 #include <vector>
-#include "ClassNhanSu.h" // Đảm bảo đã include DuAn
-
-// Thêm các include cho widget mới
+#include <string>
+#include "ClassNhanSu.h"
 #include <QDateEdit>
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QGroupBox>
-
+#include <QListWidget>
+#include <QDialog>
 
 namespace Ui {
 class GD_QLDuAn;
@@ -31,10 +31,10 @@ private slots:
     void on_btnDeleteProject_clicked();
     void on_btnCompleteProject_clicked();
     void on_btnRefresh_clicked();
-
+    void on_btnSelectMembers_clicked();
     void on_lineEditSearch_textChanged(const QString &arg1);
 
-    // Slots mới cho form tích hợp
+    // Slots cho form nhập liệu
     void on_btnSaveChanges_clicked();
     void on_btnCancelChanges_clicked();
     void on_tableProjects_itemSelectionChanged();
@@ -45,13 +45,16 @@ private:
     bool isEditMode; // Biến cờ để biết đang Thêm (false) hay Sửa (true)
     QString currentEditMaDA; // Lưu mã DA khi đang sửa
 
+    std::vector<std::string> currentSelectedMembers;
+
     void displayProjectsTable(const std::vector<DuAn>& list);
     void setupTable();
 
-    // Hàm private mới
     void loadNguoiPhuTrachComboBox();
     void clearInputFields();
-    void setInputMode(bool isEditing); // Hàm gộp để quản lý UI
+    void setInputMode(bool isEditing);
+
+    void updateMembersDisplay();
 };
 
 #endif // GD_QLDUAN_H

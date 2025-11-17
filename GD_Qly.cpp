@@ -24,7 +24,6 @@ GD_Qly::GD_Qly(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Thêm các widget con vào mainStackedWidget
     m_qlpbWidget = new GD_QLPhongBan(this);
     ui->mainStackedWidget->addWidget(m_qlpbWidget);
     m_qlduAnWidget = new GD_QLDuAn(this);
@@ -93,7 +92,6 @@ GD_Qly::~GD_Qly()
     delete ui;
 }
 
-// --- CÁC HÀM TẢI DỮ LIỆU GỐC ---
 void GD_Qly::setupTable()
 {
     QHeaderView *header = ui->tableEmployees->horizontalHeader();
@@ -135,7 +133,6 @@ void GD_Qly::displayNhanSuTable(const std::vector<std::shared_ptr<NhanSu>>& list
     ui->tableEmployees->setSortingEnabled(true);
 }
 
-// --- HÀM TẢI COMBOBOX LỌC ---
 void GD_Qly::loadFilterComboBoxes()
 {
     // 1. Tải Phòng ban
@@ -161,7 +158,6 @@ void GD_Qly::loadFilterComboBoxes()
     }
 }
 
-// --- HÀM LỌC CHUNG  ---
 void GD_Qly::filterNhanSuTable()
 {
     QString query = ui->lineEditSearch->text().trimmed().toLower();
@@ -204,7 +200,6 @@ void GD_Qly::filterNhanSuTable()
 }
 
 
-//HÀM LỌC CHUNG
 void GD_Qly::on_lineEditSearch_textChanged(const QString &arg1)
 {
     Q_UNUSED(arg1);
@@ -222,7 +217,6 @@ void GD_Qly::on_comboFilterChucVu_currentIndexChanged(int index)
 }
 
 
-// --- HÀM CHO TRANG CHẤM CÔNG ---
 void GD_Qly::loadNhanVienListToComboBox()
 {
     ui->comboChamCongNhanVien->clear();
@@ -297,7 +291,6 @@ void GD_Qly::on_btnLoadChamCong_clicked()
     ui->tableChamCongTongHop->setSortingEnabled(true);
 }
 
-// --- HÀM XUẤT CSV ---
 void GD_Qly::on_btnExport_clicked()
 {
     QString filePath = QFileDialog::getSaveFileName(this,
@@ -379,7 +372,7 @@ void GD_Qly::on_btnExport_clicked()
     };
 
     // Tiêu đề
-    out << "MaNV,HoTen,LoaiNhanSu,PhongBan,MaPhongBan,ViTri,NgaySinh,GioiTinh,CCCD,SDT,Email,DiaChi,NgayVaoCongTy,TrinhDo,ChuyenNganh,LuongThucNhan\n";
+    out << "Mã Nhân Viên,Họ tên,Loại nhân sự,Phòng ban,Mã phòng ban,Vị trí,Ngày sinh,Giới tính,CCCD,Số điện thoại,Email,Địa chỉ,Ngày vào công ty,Trình độ,Chuyên ngành,Lương\n";
 
     // Ghi dữ liệu
     QLocale cLocale(QLocale::C);
@@ -413,7 +406,6 @@ void GD_Qly::on_btnExport_clicked()
 }
 
 
-// --- HÀM CHO TRANG DUYỆT NGHỈ PHÉP ---
 
 YeuCauNghiPhep* GD_Qly::timYeuCauTheoMa(const std::string& maYC) {
     for (auto& yc : g_danhSachYeuCauNghiPhep) {
@@ -463,7 +455,6 @@ void GD_Qly::loadLeaveRequestsTable() {
         // Trạng thái (Cột 7)
         QTableWidgetItem *statusItem = new QTableWidgetItem(yc.getTrangThaiText());
 
-        // --- Logic tô màu đỏ nếu phép còn lại không đủ ---
         if (phepConLai < yc.getSoNgayNghi()) {
             QBrush redBrush(QColor(255, 192, 192)); // Màu đỏ nhạt
             for (int col = 0; col < ui->tableLeaveRequests->columnCount(); ++col) {
@@ -577,7 +568,6 @@ void GD_Qly::on_btnRejectLeave_clicked() {
     }
 }
 
-// --- SLOTS CHỨC NĂNG KHÁC ---
 
 void GD_Qly::on_btnAdd_clicked()
 {
@@ -681,7 +671,7 @@ void GD_Qly::on_btnRefresh_clicked()
 {
     loadNhanSuData();
     docYeuCauNghiPhepTuFile();
-    loadFilterComboBoxes(); // GỌI LẠI HÀM NÀY
+    loadFilterComboBoxes();
     displayNhanSuTable(g_danhSachNhanSu);
     loadNhanVienListToComboBox();
     ui->lineEditSearch->clear();
@@ -691,8 +681,14 @@ void GD_Qly::on_btnRefresh_clicked()
 }
 
 
-// --- ĐIỀU HƯỚNG ---
-void GD_Qly::on_btnNavEmployees_clicked()
+void GD_Qly::on_btnNavMyProfile_clicked()
+{
+    GD_NVChung *formChiTiet = new GD_NVChung(m_maQuanLy, this);
+
+    formChiTiet->setAttribute(Qt::WA_DeleteOnClose);
+
+    formChiTiet->show();
+}void GD_Qly::on_btnNavEmployees_clicked()
 {
     ui->mainStackedWidget->setCurrentIndex(0);
 }

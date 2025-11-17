@@ -6,6 +6,9 @@
 #include <QHeaderView>
 #include <algorithm>
 #include <QDate>
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
+#include <QListWidgetItem>
 
 GD_QLDuAn::GD_QLDuAn(QWidget *parent) :
     QWidget(parent),
@@ -16,7 +19,6 @@ GD_QLDuAn::GD_QLDuAn(QWidget *parent) :
 
     setupTable();
 
-    // Ẩn khung nhập liệu khi mới vào
     ui->groupBox_Input->setVisible(false);
 
     // Vô hiệu hóa các nút chức năng khi chưa chọn
@@ -24,6 +26,7 @@ GD_QLDuAn::GD_QLDuAn(QWidget *parent) :
     ui->btnDeleteProject->setEnabled(false);
     ui->btnDetailProject->setEnabled(false);
     ui->btnCompleteProject->setEnabled(false);
+
     // Đọc dữ liệu từ file
     docNhanSuTuFile();
     docDuAnTuFile();
@@ -69,7 +72,7 @@ void GD_QLDuAn::displayProjectsTable(const std::vector<DuAn>& list)
         }
         ui->tableProjects->setItem(row, 2, new QTableWidgetItem(tenPhuTrach));
 
-        ui->tableProjects->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(duAn.getNgayBatDau().toString()))); // Giả định NgayThang::toString()
+        ui->tableProjects->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(duAn.getNgayBatDau().toString())));
 
         QString trangThai = duAn.isDaHoanThanh() ? "Hoàn thành" : "Đang thực hiện";
         QTableWidgetItem *trangThaiItem = new QTableWidgetItem(trangThai);
@@ -83,18 +86,24 @@ void GD_QLDuAn::displayProjectsTable(const std::vector<DuAn>& list)
     ui->tableProjects->setSortingEnabled(true);
 }
 
+// Chỉ load Nhân viên chính thức hoặc Quản lý
 void GD_QLDuAn::loadNguoiPhuTrachComboBox()
 {
     ui->comboNguoiPT->clear();
-    ui->comboNguoiPT->addItem("Chọn người phụ trách", QVariant("")); // Thêm mục trống
+    ui->comboNguoiPT->addItem("Chọn người phụ trách", QVariant(""));
 
-    // Tải danh sách từ g_danhSachNhanSu
     for(const auto& ns : g_danhSachNhanSu)
     {
         if(ns->getTrangThai() == TrangThaiNhanVien::DANG_LAM)
         {
-            QString displayText = QString::fromStdString(ns->getHoTen() + " (" + ns->getMaNhanVien() + ")");
-            ui->comboNguoiPT->addItem(displayText, QVariant(QString::fromStdString(ns->getMaNhanVien())));
+            // Kiểm tra kiểu đối tượng
+            bool isOfficial = (std::dynamic_pointer_cast<NhanVienChinhThuc>(ns) != nullptr);
+            bool isManager = (std::dynamic_pointer_cast<QuanLy>(ns) != nullptr);
+
+            if (isOfficial || isManager) {
+                QString displayText = QString::fromStdString(ns->getHoTen() + " (" + ns->getMaNhanVien() + ")");
+                ui->comboNguoiPT->addItem(displayText, QVariant(QString::fromStdString(ns->getMaNhanVien())));
+            }
         }
     }
 }
@@ -107,6 +116,10 @@ void GD_QLDuAn::clearInputFields()
     ui->dateNgayKT->setDate(QDate::currentDate().addMonths(6));
     ui->comboNguoiPT->setCurrentIndex(0);
     ui->spinKinhPhi->setValue(0.0);
+
+    //Xóa danh sách thành viên tạm
+    currentSelectedMembers.clear();
+    ui->txtMembers->clear();
 }
 
 void GD_QLDuAn::setInputMode(bool isEditing)
@@ -114,6 +127,21 @@ void GD_QLDuAn::setInputMode(bool isEditing)
     isEditMode = isEditing;
     ui->txtMaDA->setReadOnly(isEditing);
     ui->groupBox_Input->setVisible(true);
+}
+
+void GD_QLDuAn::updateMembersDisplay()
+{
+    QStringList names;
+    for (const std::string& id : currentSelectedMembers) {
+        auto ns = timNhanSuTheoMa(id);
+        if (ns) {
+            names << QString::fromStdString(ns->getHoTen());
+        } else {
+            names << QString::fromStdString(id);
+        }
+    }
+    ui->txtMembers->setText(names.join(", "));
+    ui->txtMembers->setToolTip(ui->txtMembers->text());
 }
 
 void GD_QLDuAn::on_tableProjects_itemSelectionChanged()
@@ -125,7 +153,6 @@ void GD_QLDuAn::on_tableProjects_itemSelectionChanged()
     ui->btnCompleteProject->setEnabled(selected);
 }
 
-
 void GD_QLDuAn::on_btnAddProject_clicked()
 {
     clearInputFields();
@@ -133,12 +160,11 @@ void GD_QLDuAn::on_btnAddProject_clicked()
     ui->txtMaDA->setFocus();
 }
 
+// Sửa dự án: Load thêm danh sách thành viên
 void GD_QLDuAn::on_btnEditProject_clicked()
 {
     int currentRow = ui->tableProjects->currentRow();
-    if (currentRow < 0) {
-        return;
-    }
+    if (currentRow < 0) return;
 
     QString maDA = ui->tableProjects->item(currentRow, 0)->text();
     DuAn* da = timDuAnTheoMa(maDA.toStdString());
@@ -152,29 +178,81 @@ void GD_QLDuAn::on_btnEditProject_clicked()
     ui->txtTenDA->setText(QString::fromStdString(da->getTenDuAn()));
     ui->spinKinhPhi->setValue(da->getKinhPhi());
 
-    // Chuyển NgayThang sang QDate
     NgayThang bd = da->getNgayBatDau();
     NgayThang kt = da->getNgayKetThuc();
     ui->dateNgayBD->setDate(QDate(bd.getNam(), bd.getThang(), bd.getNgay()));
     ui->dateNgayKT->setDate(QDate(kt.getNam(), kt.getThang(), kt.getNgay()));
 
-    // Tìm người phụ trách trong combobox
     QString maPT = QString::fromStdString(da->getNguoiPhuTrach());
     int index = ui->comboNguoiPT->findData(QVariant(maPT));
-    if (index != -1) {
-        ui->comboNguoiPT->setCurrentIndex(index);
-    } else {
-        ui->comboNguoiPT->setCurrentIndex(0); // Không tìm thấy
-    }
+    if (index != -1) ui->comboNguoiPT->setCurrentIndex(index);
+    else ui->comboNguoiPT->setCurrentIndex(0);
 
-    // Lưu mã DA hiện tại và chuyển chế độ
+    // [MỚI] Load thành viên
+    currentSelectedMembers = da->getDanhSachThanhVien();
+    updateMembersDisplay();
+
     currentEditMaDA = maDA;
-    setInputMode(true); // Chuyển sang chế độ Sửa
+    setInputMode(true);
 }
 
+// Xử lý chọn thành viên qua Dialog
+void GD_QLDuAn::on_btnSelectMembers_clicked()
+{
+    QDialog dialog(this);
+    dialog.setWindowTitle("Chọn thành viên dự án");
+    dialog.resize(400, 500);
+    QVBoxLayout layout(&dialog);
+
+    QListWidget listWidget;
+    QString maPT = ui->comboNguoiPT->currentData().toString(); // Lấy mã người PT để loại trừ
+
+    for (const auto& ns : g_danhSachNhanSu) {
+        if (ns->getTrangThai() != TrangThaiNhanVien::DANG_LAM) continue;
+
+        // Không cho chọn người đang làm Quản lý dự án vào danh sách thành viên
+        if (ns->getMaNhanVien() == maPT.toStdString()) continue;
+
+        QListWidgetItem* item = new QListWidgetItem(
+            QString::fromStdString(ns->getHoTen() + " (" + ns->getMaNhanVien() + ")"),
+            &listWidget
+            );
+        item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+        item->setData(Qt::UserRole, QString::fromStdString(ns->getMaNhanVien()));
+
+        // Kiểm tra đã chọn trước đó chưa
+        bool isSelected = false;
+        for (const std::string& selectedID : currentSelectedMembers) {
+            if (selectedID == ns->getMaNhanVien()) {
+                isSelected = true;
+                break;
+            }
+        }
+        item->setCheckState(isSelected ? Qt::Checked : Qt::Unchecked);
+    }
+
+    layout.addWidget(&listWidget);
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(&buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    connect(&buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    layout.addWidget(&buttonBox);
+
+    if (dialog.exec() == QDialog::Accepted) {
+        currentSelectedMembers.clear();
+        for (int i = 0; i < listWidget.count(); ++i) {
+            QListWidgetItem* item = listWidget.item(i);
+            if (item->checkState() == Qt::Checked) {
+                currentSelectedMembers.push_back(item->data(Qt::UserRole).toString().toStdString());
+            }
+        }
+        updateMembersDisplay();
+    }
+}
+
+// Lưu dự án kèm danh sách thành viên
 void GD_QLDuAn::on_btnSaveChanges_clicked()
 {
-    // Lấy dữ liệu từ form
     QString maDA = ui->txtMaDA->text().trimmed();
     QString tenDA = ui->txtTenDA->text().trimmed();
     QString maPT = ui->comboNguoiPT->currentData().toString();
@@ -182,11 +260,9 @@ void GD_QLDuAn::on_btnSaveChanges_clicked()
     QDate ngayBD_Q = ui->dateNgayBD->date();
     QDate ngayKT_Q = ui->dateNgayKT->date();
 
-    // Chuyển QDate sang NgayThang
     NgayThang ngayBD(ngayBD_Q.day(), ngayBD_Q.month(), ngayBD_Q.year());
     NgayThang ngayKT(ngayKT_Q.day(), ngayKT_Q.month(), ngayKT_Q.year());
 
-    // --- Validation (Giống logic console) ---
     if (maDA.isEmpty() || tenDA.isEmpty()) {
         QMessageBox::warning(this, "Thiếu thông tin", "Mã dự án và Tên dự án không được để trống.");
         return;
@@ -195,6 +271,7 @@ void GD_QLDuAn::on_btnSaveChanges_clicked()
         QMessageBox::warning(this, "Thiếu thông tin", "Vui lòng chọn người phụ trách.");
         return;
     }
+
     if (isEditMode)
     {
         DuAn* da = timDuAnTheoMa(currentEditMaDA.toStdString());
@@ -208,6 +285,9 @@ void GD_QLDuAn::on_btnSaveChanges_clicked()
         da->setNgayBatDau(ngayBD);
         da->setNgayKetThuc(ngayKT);
 
+        // Cập nhật thành viên
+        da->setDanhSachThanhVien(currentSelectedMembers);
+
         QMessageBox::information(this, "Thành công", "Đã cập nhật thông tin dự án.");
     }
     else
@@ -216,18 +296,19 @@ void GD_QLDuAn::on_btnSaveChanges_clicked()
             QMessageBox::warning(this, "Trùng lặp", "Mã dự án này đã tồn tại.");
             return;
         }
-        std::vector<std::string> thanhVien; // Thêm mới thì ds thành viên trống
-        DuAn duAnMoi(maDA.toStdString(), tenDA.toStdString(), ngayBD, ngayKT, maPT.toStdString(), thanhVien, kinhPhi);
+
+        // Tạo dự án mới với danh sách thành viên đã chọn
+        DuAn duAnMoi(maDA.toStdString(), tenDA.toStdString(), ngayBD, ngayKT, maPT.toStdString(), currentSelectedMembers, kinhPhi);
         g_danhSachDuAn.push_back(duAnMoi);
 
         QMessageBox::information(this, "Thành công", "Đã thêm dự án mới thành công.");
     }
 
-    luuDuAnVaoFile(); // Lưu thay đổi ra file
-    displayProjectsTable(g_danhSachDuAn); // Tải lại bảng
-    ui->groupBox_Input->setVisible(false); // Ẩn form
-    clearInputFields(); // Xóa sạch form
-    isEditMode = false; // Reset chế độ
+    luuDuAnVaoFile();
+    displayProjectsTable(g_danhSachDuAn);
+    ui->groupBox_Input->setVisible(false);
+    clearInputFields();
+    isEditMode = false;
 }
 
 void GD_QLDuAn::on_btnCancelChanges_clicked()
@@ -236,7 +317,6 @@ void GD_QLDuAn::on_btnCancelChanges_clicked()
     clearInputFields();
     isEditMode = false;
 }
-
 
 void GD_QLDuAn::on_btnDeleteProject_clicked()
 {
@@ -264,8 +344,8 @@ void GD_QLDuAn::on_btnDeleteProject_clicked()
             g_danhSachDuAn.end()
             );
 
-        luuDuAnVaoFile(); // Lưu lại file
-        displayProjectsTable(g_danhSachDuAn); // Tải lại bảng
+        luuDuAnVaoFile();
+        displayProjectsTable(g_danhSachDuAn);
         QMessageBox::information(this, "Thành công", "Đã xóa dự án thành công.");
     }
 }
@@ -306,9 +386,9 @@ void GD_QLDuAn::on_btnCompleteProject_clicked()
 
 void GD_QLDuAn::on_btnRefresh_clicked()
 {
-    docNhanSuTuFile(); // Đọc lại cả nhân sự
-    docDuAnTuFile(); // Đọc lại từ file
-    loadNguoiPhuTrachComboBox(); // Tải lại combobox
+    docNhanSuTuFile();
+    docDuAnTuFile();
+    loadNguoiPhuTrachComboBox();
     displayProjectsTable(g_danhSachDuAn);
     ui->lineEditSearch->clear();
     QMessageBox::information(this, "Thông Báo", "Đã làm mới danh sách dự án!");
@@ -324,7 +404,6 @@ void GD_QLDuAn::on_lineEditSearch_textChanged(const QString &arg1)
 
     std::vector<DuAn> filteredList;
     for (const auto& da : g_danhSachDuAn) {
-        // Tìm theo cả người phụ trách
         QString tenPT = "N/A";
         auto ns = timNhanSuTheoMa(da.getNguoiPhuTrach());
         if(ns) tenPT = QString::fromStdString(ns->getHoTen());

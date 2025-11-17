@@ -184,8 +184,6 @@ void GD_QLPhongBan::on_btnThemPB_clicked()
 {
     setEditMode(false);
 }
-// -------------------------
-
 
 void GD_QLPhongBan::on_btnSuaPB_clicked()
 {

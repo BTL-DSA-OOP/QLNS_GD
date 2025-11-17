@@ -45,14 +45,13 @@ public:
     void setTrangThai(TrangThaiDuyet tt) { trangThai = tt; }
     void setNguoiDuyet(const std::string &nd) { nguoiDuyet = nd; }
 
-    // Hàm tiện ích
     QString getTrangThaiText() const {
         if (trangThai == TrangThaiDuyet::DA_DUYET) return "Đã duyệt";
         if (trangThai == TrangThaiDuyet::TU_CHOI) return "Từ chối";
         return "Chờ duyệt";
     }
 
-    // Tạo ID mới (giả lập)
+    // Tạo ID mới
     static std::string generateNewID(int count) {
         return "YC" + std::to_string(count + 1);
     }

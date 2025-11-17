@@ -4,13 +4,12 @@
 #include <QTextStream>
 #include <QIODevice>
 #include <QLocale>
-
-    //Biến toàn cục
+//Biến toàn cục
 std::vector<std::shared_ptr<NhanSu>> g_danhSachNhanSu;
 std::vector<DuAn> g_danhSachDuAn;
 std::vector<PhongBan> g_danhSachPhongBan;
 std::vector<YeuCauNghiPhep> g_danhSachYeuCauNghiPhep;
-// --- Hàm tìm kiếm Nhân Sự ---
+//  Hàm tìm kiếm Nhân Sự
 std::shared_ptr<NhanSu> timNhanSuTheoMa(const std::string& maNV) {
     for (const auto& ns : g_danhSachNhanSu) {
         if (ns->getMaNhanVien() == maNV) {
@@ -20,7 +19,7 @@ std::shared_ptr<NhanSu> timNhanSuTheoMa(const std::string& maNV) {
     return nullptr;
 }
 
-// --- Hàm đọc/ghi file "dsns.txt" ---
+// Hàm đọc/ghi file "dsns.txt"
 
 void docNhanSuTuFile() {
     g_danhSachNhanSu.clear();
@@ -130,7 +129,7 @@ void docNhanSuTuFile() {
                 }
             }
         }
-        else if (line.startsWith("---------------------------------")) {
+        else if (line.startsWith("")) {
             if (ns) {
                 g_danhSachNhanSu.push_back(ns);
                 ns = nullptr;
@@ -192,12 +191,12 @@ void luuNhanSuVaoFile() {
                     << QString::fromStdString(tn.getSoDienThoai()) << "\n";
             }
         }
-        out << "---------------------------------\n";
+        out << "\n";
     }
     file.close();
 }
 
-// Hàm đọc/ghi Yêu cầu nghỉ phép (SỬA LỖI TÊN FILE VÀ DÙNG QLOCALE)
+// Hàm đọc/ghi Yêu cầu nghỉ phép
 void docYeuCauNghiPhepTuFile() {
     g_danhSachYeuCauNghiPhep.clear();
     QFile file("yeucaughinghep.txt");
@@ -220,7 +219,7 @@ void docYeuCauNghiPhepTuFile() {
             NgayThang bd = NgayThang::fromString(parts[2].toStdString());
             NgayThang kt = NgayThang::fromString(parts[3].toStdString());
 
-            double soNgay = locale.toDouble(parts[4]); // Dùng locale để đọc số
+            double soNgay = locale.toDouble(parts[4]);
 
             std::string lyDo = parts[5].toStdString();
 
@@ -241,7 +240,7 @@ void docYeuCauNghiPhepTuFile() {
 }
 
 void luuYeuCauNghiPhepVaoFile() {
-    QFile file("yeucaughinghep.txt"); // <<< TÊN FILE ĐÃ ĐƯỢC CHUẨN HÓA
+    QFile file("yeucaughinghep.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
         return;
     }
@@ -301,7 +300,7 @@ void xoaTaiKhoan(const std::string& tenNguoiDung) {
                 skipMode = false;
             }
         }
-        if (line.startsWith("---------------------------------")) {
+        if (line.startsWith("")) {
             if (skipMode) {
                 skipMode = false;
                 continue;

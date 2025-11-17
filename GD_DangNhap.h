@@ -1,5 +1,3 @@
-// GD_DangNhap.h
-
 #ifndef GD_DANGNHAP_H
 #define GD_DANGNHAP_H
 

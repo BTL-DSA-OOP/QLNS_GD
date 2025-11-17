@@ -30,7 +30,7 @@ protected:
     void showEvent(QShowEvent *event) override;
 
 private slots:
-    // --- THÊM SLOT NÀY ---
+    // THÊM SLOT NÀY
     void on_btnThemPB_clicked();
 
     void on_btnSuaPB_clicked();
@@ -53,7 +53,6 @@ private:
     EditMode m_currentMode = EditMode::None;
     QString m_editingMaPB; // Lưu lại mã PB đang sửa
 
-    // Các hàm private helper
     void setupTables();
     void refreshData();
     void displayPhongBanDetails(const std::string& maPB);

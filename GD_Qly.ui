@@ -314,6 +314,26 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
          </property>
         </widget>
        </item>
+	<item>
+	 <widget class="QPushButton" name="btnNavMyProfile">
+	  <property name="text">
+ 	  <string>Hồ sơ cá nhân</string>
+ 	 </property>
+ 	 <property name="icon">
+ 	  <iconset resource="icons.qrc">
+ 	   <normaloff>:/icons/user.svg</normaloff>:/icons/user.svg</iconset>
+ 	 </property>
+ 	 <property name="checkable">
+ 	  <bool>false</bool>
+ 	 </property>
+	  <property name="autoExclusive">
+ 	  <bool>false</bool>
+ 	 </property>
+	  <property name="toolTip">
+	   <string>Xem hồ sơ cá nhân của bạn (chấm công, xin nghỉ, v.v.)</string>
+ 	 </property>
+	 </widget>
+	</item>
        <item>
         <widget class="QPushButton" name="btnNavAttendance">
          <property name="text">

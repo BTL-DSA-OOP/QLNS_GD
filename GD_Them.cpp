@@ -98,7 +98,7 @@ bool isEmailValid(const QString &email) {
 }
 
 
-// --- HÀM Tải dữ liệu lên form ---
+// HÀM Tải dữ liệu lên form
 void GD_Them::loadDataForEdit(std::shared_ptr<NhanSu> ns)
 {
     isEditMode = true;
@@ -106,13 +106,11 @@ void GD_Them::loadDataForEdit(std::shared_ptr<NhanSu> ns)
     ui->lblFormTitle->setText("Cập nhật thông tin nhân sự");
     this->setWindowTitle("Cập nhật thông tin nhân sự");
     ui->btnThem->setText("Cập nhật");
-
     ui->txtUsername->setText(m_editMaNV);
     ui->txtUsername->setReadOnly(true);
     ui->txtPassword->setText("********");
     ui->txtConfirmPassword->setText("********");
     ui->txtEmail->setText(QString::fromStdString(ns->getEmail()));
-
     ui->txtMaNhanVien->setText(m_editMaNV);
     ui->txtHoTen->setText(QString::fromStdString(ns->getHoTen()));
     ui->txtCCCD->setText(QString::fromStdString(ns->getCCCD()));
@@ -126,34 +124,18 @@ void GD_Them::loadDataForEdit(std::shared_ptr<NhanSu> ns)
 
     ui->dateNgayVaoCongTy->setDate(QDate::fromString(QString::fromStdString(ns->getNgayVaoCongTy().toString()), "dd/MM/yyyy"));
     ui->txtViTriCongViec->setText(QString::fromStdString(ns->getViTriCongViec()));
-    ui->cmbPhongBan->setCurrentText(QString::fromStdString(ns->getPhongBan().getTenPhongBan()));
+    int indexPB = ui->cmbPhongBan->findData(QString::fromStdString(ns->getPhongBan().getMaPhongBan()));
+    if (indexPB != -1) ui->cmbPhongBan->setCurrentIndex(indexPB);
+
     ui->txtTrinhDoHocVan->setText(QString::fromStdString(ns->getTrinhDoHocVan()));
     ui->txtChuyenNganh->setText(QString::fromStdString(ns->getChuyenNganh()));
-
-    ui->cmbLoaiNhanSu->setCurrentText(QString::fromStdString(ns->getLoaiNhanSu()));
-    // Tải dữ liệu lương
-    if (auto tv = std::dynamic_pointer_cast<NhanVienThuViec>(ns)) {
-        ui->spinPhuCapThucTap->setValue(tv->getPhuCapThucTap());
-    } else if (auto ct = std::dynamic_pointer_cast<NhanVienChinhThuc>(ns)) {
-        ui->spinLuongCoBan_CT->setValue(ct->getLuongCoBan());
-        ui->spinHeSoLuong_CT->setValue(ct->getHeSoLuong());
-        ui->spinPhuCapChucVu_CT->setValue(ct->getPhuCapChucVu());
-        ui->spinPhuCapAnTrua->setValue(ct->getPhuCapAnTrua());
-        ui->spinPhuCapXangXe->setValue(ct->getPhuCapXangXe());
-        // Tải thân nhân
-        for(const auto& tn : ct->getDanhSachThanNhan()) {
-            int row = ui->tableThanNhan->rowCount();
-            ui->tableThanNhan->insertRow(row);
-            ui->tableThanNhan->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(tn.getHoTen())));
-            ui->tableThanNhan->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(tn.getQuanHe())));
-            ui->tableThanNhan->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(tn.getSoDienThoai())));
-        }
-    } else if (auto ql = std::dynamic_pointer_cast<QuanLy>(ns)) {
+    if (auto ql = std::dynamic_pointer_cast<QuanLy>(ns)) {
+        int index = ui->cmbLoaiNhanSu->findData("QuanLy");
+        if (index != -1) ui->cmbLoaiNhanSu->setCurrentIndex(index);
         ui->spinLuongCoBan_QL->setValue(ql->getLuongCoBan());
         ui->spinHeSoLuong_QL->setValue(ql->getHeSoLuong());
         ui->spinPhuCapQuanLy->setValue(ql->getPhuCapQuanLy());
         ui->spinThuongHieuQua->setValue(ql->getThuongHieuQua());
-        // Tải thân nhân
         for(const auto& tn : ql->getDanhSachThanNhan()) {
             int row = ui->tableThanNhan->rowCount();
             ui->tableThanNhan->insertRow(row);
@@ -162,9 +144,30 @@ void GD_Them::loadDataForEdit(std::shared_ptr<NhanSu> ns)
             ui->tableThanNhan->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(tn.getSoDienThoai())));
         }
     }
+    else if (auto ct = std::dynamic_pointer_cast<NhanVienChinhThuc>(ns)) {
+        int index = ui->cmbLoaiNhanSu->findData("NhanVienChinhThuc");
+        if (index != -1) ui->cmbLoaiNhanSu->setCurrentIndex(index);
+        ui->spinLuongCoBan_CT->setValue(ct->getLuongCoBan());
+        ui->spinHeSoLuong_CT->setValue(ct->getHeSoLuong());
+        ui->spinPhuCapChucVu_CT->setValue(ct->getPhuCapChucVu());
+        ui->spinPhuCapAnTrua->setValue(ct->getPhuCapAnTrua());
+        ui->spinPhuCapXangXe->setValue(ct->getPhuCapXangXe());
+        for(const auto& tn : ct->getDanhSachThanNhan()) {
+            int row = ui->tableThanNhan->rowCount();
+            ui->tableThanNhan->insertRow(row);
+            ui->tableThanNhan->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(tn.getHoTen())));
+            ui->tableThanNhan->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(tn.getQuanHe())));
+            ui->tableThanNhan->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(tn.getSoDienThoai())));
+        }
+    }
+    else if (auto tv = std::dynamic_pointer_cast<NhanVienThuViec>(ns)) {
+        int index = ui->cmbLoaiNhanSu->findData("NhanVienThuViec");
+        if (index != -1) ui->cmbLoaiNhanSu->setCurrentIndex(index);
+        ui->spinPhuCapThucTap->setValue(tv->getPhuCapThucTap());
+    }
+    updateSalaryFields();
     updateThanNhanHeight();
 }
-
 
 void capNhatThongTinTaiKhoan(const QString& maNV, const QString& emailMoi, const QString& vaiTroMoi)
 {
@@ -270,7 +273,6 @@ void GD_Them::on_btnThem_clicked()
 {
     ui->lblStatus->clear();
 
-    // --- 1. Lấy và kiểm tra dữ liệu ---
     QString username = ui->txtUsername->text().trimmed();
     QString password = ui->txtPassword->text();
     QString confirmPassword = ui->txtConfirmPassword->text();
@@ -301,7 +303,6 @@ void GD_Them::on_btnThem_clicked()
         }
     }
 
-    // Kiểm tra chung cho cả "Thêm" và "Sửa"
     if (!isEmailValid(email)) {
         ui->lblStatus->setText("Địa chỉ Email không hợp lệ!");
         return;
@@ -312,17 +313,14 @@ void GD_Them::on_btnThem_clicked()
     }
 
 
-    // --- 2. Xử lý logic ---
     if (isEditMode)
     {
-        // --- CHẾ ĐỘ SỬA ---
         auto ns_cu = timNhanSuTheoMa(m_editMaNV.toStdString());
         if (!ns_cu) {
             QMessageBox::critical(this, "Lỗi", "Không tìm thấy nhân sự để cập nhật.");
             return;
         }
 
-        // Xác định loại nhân sự cũ (dưới dạng Data: "NhanVienChinhThuc")
         QString oldRoleData;
         if (std::dynamic_pointer_cast<NhanVienThuViec>(ns_cu)) oldRoleData = "NhanVienThuViec";
         else if (std::dynamic_pointer_cast<NhanVienChinhThuc>(ns_cu)) oldRoleData = "NhanVienChinhThuc";
@@ -331,16 +329,13 @@ void GD_Them::on_btnThem_clicked()
 
         if (oldRoleData == newRoleData)
         {
-            // Cập nhật dữ liệu trên đối tượng cũ
             fillCommonDataFromUI(ns_cu);
             fillSalaryDataFromUI(ns_cu);
 
-            // Cập nhật file account
             capNhatThongTinTaiKhoan(m_editMaNV, email, newRoleData);
         }
         else
         {
-            // 1. Tạo đối tượng mới dựa trên vai trò mới
             std::shared_ptr<NhanSu> ns_moi;
             if (newRoleData == "NhanVienThuViec") {
                 ns_moi = std::make_shared<NhanVienThuViec>();
@@ -350,14 +345,11 @@ void GD_Them::on_btnThem_clicked()
                 ns_moi = std::make_shared<QuanLy>();
             }
 
-            // 2. Gán Mã NV và điền thông tin chung từ UI
-            ns_moi->setMaNhanVien(m_editMaNV.toStdString()); // Giữ nguyên Mã NV
+            ns_moi->setMaNhanVien(m_editMaNV.toStdString());
             fillCommonDataFromUI(ns_moi);
 
-            // 3. Điền thông tin lương mới từ UI
             fillSalaryDataFromUI(ns_moi);
 
-            // 4. Thay thế con trỏ CŨ bằng con trỏ mới trong danh sách toàn cục
             for (auto& ns_ptr : g_danhSachNhanSu) {
                 if (ns_ptr->getMaNhanVien() == m_editMaNV.toStdString()) {
                     ns_ptr = ns_moi; // Đây là bước "thay thế"
@@ -365,18 +357,15 @@ void GD_Them::on_btnThem_clicked()
                 }
             }
 
-            // 5. Cập nhật file account (cả email và vai trò)
             capNhatThongTinTaiKhoan(m_editMaNV, email, newRoleData);
         }
 
-        // Lưu file dsns.txt
         luuNhanSuVaoFile();
         QMessageBox::information(this, "Thành công", "Cập nhật thông tin nhân sự thành công!");
 
     }
     else
     {
-        // --- CHẾ ĐỘ THÊM mới  ---
         std::shared_ptr<NhanSu> ns_moi;
         if (newRoleData == "NhanVienThuViec") {
             ns_moi = std::make_shared<NhanVienThuViec>();
